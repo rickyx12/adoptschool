@@ -43,8 +43,8 @@
 	  		
 	  		@inject('comments', 'App\Library\Services\Comment')
 	  		@inject('updates', 'App\Library\Services\Updates')
-			
-			<div class="card mb-3 ml-1 pb-0">
+
+			<div id="projectCard{{ $project->id }}" class="card mb-3 ml-1 pb-0">
 			  <div class="card-body">
 			  	<div class="row">
 			  		<div class="col-md">
@@ -112,12 +112,19 @@
 					<div class="col-md text-right">
 
 						@auth('stakeholders')
-							<button class="btn btn-success btn-sm"><i class="fa fa-hands-helping"></i> I want to be a Stakeholder</button>
+							<button 
+								class="btn btn-success btn-sm applyBtn" 
+								data-toggle="modal" 
+								data-target="#applyStakeholderModal{{ $project->id }}"
+								data-id="{{ $project->id }}"
+							/>
+								<i class="fa fa-hands-helping"></i> I want to be a Stakeholder
+							</button>
 						@endauth
 
 						@guest('stakeholders')
 						    <small class="text-muted mr-2">
-						      Login to be a Stakeholder
+						      Login to be a Stakeholder.
 						    </small>
 					    @endguest
 
@@ -234,7 +241,7 @@
 			      			<div class="col-md">
 			      				<h6>Comments</h6>
 
-			      				<div id="comments">
+			      				<div id="stakeholdersComments">
 				      				@foreach($comments->getComments($project->id) as $comment)
 					      				<div class="row mb-n4">
 					      					<div class="col-md">
@@ -250,8 +257,14 @@
 			      				</div>
 			      				<div class="row">
 			      					<div class="col-md">
-			      						<textarea id="commentField{{ $project->id }}" class="form-control commentField" data-id="{{ $project->id }}" cols="5" rows="2" placeholder="Write comment here then Press Enter."></textarea>
-								        <div id="errorComment{{ $project->id }}"></div>
+			      						@if(Auth::guard('stakeholders')->check())
+				      						<textarea id="commentField{{ $project->id }}" class="form-control commentField" data-id="{{ $project->id }}" cols="5" rows="2" placeholder="Write comment here then Press Enter."></textarea>
+									        <div id="errorComment{{ $project->id }}"></div>
+									    @else
+										    <small class="text-muted mr-2">
+										      Login to comment.
+										    </small>									    	
+								        @endif
 			      					</div>
 			      				</div>
 
@@ -261,7 +274,70 @@
 			      </div>
 			    </div>
 			  </div>
-			</div> 
+			</div>
+
+
+			<!-- Modal -->
+			<div class="modal fade" id="applyStakeholderModal{{ $project->id }}" tabindex="-1" role="dialog" aria-hidden="true">
+			  <div class="modal-dialog" role="document">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <h5 class="modal-title" id="exampleModalLabel">Stakeholders Application</h5>
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			          <span aria-hidden="true">&times;</span>
+			        </button>
+			      </div>
+			      <div class="modal-body">
+			        <div class="container-fluid">
+			        	<div class="row">
+			        		<div class="col-md">
+			        			<ul>
+			        				<li>
+			        					<span style="font-size: 17px;">{{ $project->sub_category }}</span>
+			        				</li>
+			        				<li>
+			        					<span style="font-size: 17px;">Estimated Amount:  @money($project->amount)</span>
+			        				</li>
+			        				<li>
+			        					<span style="font-size: 17px;">Quantity: {{ $project->qty }}</span>
+			        				</li>
+			        				<li>
+			        					<span style="font-size: 17px;">Implementation Date: @formatDate($project->implementation_date)</span>
+			        				</li>			        							        				
+			        			</ul>
+			        		</div>
+			        	</div>
+			        	<hr>
+			        	<div class="row">
+							<div class="col-md-7">
+								<div class="form-group">
+									<h6>Contact No#:</h6>
+									<input id="stakeholdersContactNo{{ $project->id }}" type="text" class="form-control" />
+									<small class="form-text text-muted">
+									 	Our staff will be contacting you.
+									</small>
+									<div id="errorStakeholderContact{{ $project->id }}"></div>									
+								</div>
+							</div>			        		
+			        	</div>
+			        	<div class="row">
+			        		<div class="col-md">
+			        			<div class="form-group">
+			        				<h6>Message <span style="font-size: 15px;">(Optional)</span></h6>
+			        				<textarea id="stakeholdersMessage{{ $project->id }}" class="form-control" rows="5" cols="5"></textarea>
+			        			</div>
+			        		</div>
+			        	</div>
+			        </div>
+			      </div>
+			      <div class="modal-footer">
+			        <button type="button" id="stakeholderCancerReqBtn{{ $project->id }}" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+			        <button type="button" id="applyStakeholderBtn{{ $project->id }}" class="btn btn-success">Apply as Stakeholder</button>
+			      </div>
+			    </div>
+			  </div>
+			</div>
+
 	  	@endforeach
 	  </div>
     </div>
@@ -270,5 +346,6 @@
 
 @push('stakeholders-projects-scripts')
 	<script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.6/dist/loadingoverlay.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 	<script src="{{ url('../resources/js/stakeholders/projects.js') }}"></script>
 @endpush

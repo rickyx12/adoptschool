@@ -48,7 +48,8 @@ Route::prefix('/account')->group(function() {
 		Route::prefix('/projects')->group(function() {
 			Route::post('/filtered', 'Stakeholders@showFilteredProjects');
 			Route::post('/comments/add', 'Stakeholders@addComment');
-			Route::get('{projectId}/comments', 'Stakeholders@getComments');	
+			Route::get('{projectId}/comments', 'Stakeholders@getComments');
+			Route::post('/stakeholders/add', 'Stakeholders@addStakeholder');	
 		});
 
 		Route::get('/logout', 'Stakeholders@logout');
@@ -63,6 +64,9 @@ Route::prefix('/account')->group(function() {
 
 		Route::prefix('/projects')->group(function() {
 			Route::post('/updates/add', 'Schools@addProjectUpdate');
+			Route::post('/comments/add', 'Schools@addComment');
+			Route::get('{projectId}/comments', 'Schools@getComments');
+			Route::get('{projectId}/comments/{commentId}/{userType}', 'Schools@getSingleComment');				
 		});
 
 	});

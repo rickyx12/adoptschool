@@ -34,6 +34,11 @@
              @if(Request::is('account/stakeholders/projects') || Request::is('account/stakeholders/projects/filtered')) <li class="nav-item active"> @else <li class="nav-item"> @endif
               <a href="{{ url('account/stakeholders/projects') }}" class="nav-link">Projects</a>
             </li>
+
+            <li class="nav-item">
+              <a href="#" class="nav-link">Contributions</a>
+            </li>
+
           @endauth
 
           @auth('schools')
@@ -45,6 +50,10 @@
             @if(Request::is('account/schools/projects')) <li class="nav-item active"> @else <li class="nav-item"> @endif
               <a href="{{ url('/account/schools/projects') }}" class="nav-link">Projects</a>
             </li>
+
+            <li class="nav-item">
+              <a href="#" class="nav-link">Stakeholders</a>
+            </li>            
           @endauth
 
           @if(Auth::guard('stakeholders')->guest() && Auth::guard('schools')->guest())

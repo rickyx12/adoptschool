@@ -64,6 +64,10 @@ class Stakeholders extends Controller
 		return response()->json($this->comment->getComments($projectId));
 	}
 
+	public function addStakeholder(Request $req) {
+		$this->projects->addStakeholder($req);
+	}
+
 	public function logout() {
 		Auth::guard('stakeholders')->logout();
 		return redirect('/home');

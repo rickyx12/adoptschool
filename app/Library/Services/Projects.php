@@ -4,6 +4,7 @@ namespace App\Library\Services;
 use App\Library\Services\Contracts\ProjectsInterface;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class Projects implements ProjectsInterface
 {
@@ -59,6 +60,7 @@ class Projects implements ProjectsInterface
 
     	return DB::select('
 		    		SELECT  p.id,
+                            su.name as school,
                             c.name as category, 
                             sc.name as sub_category, 
                             p.qty, 
@@ -71,6 +73,8 @@ class Projects implements ProjectsInterface
                             p.description, 
                             sy.school_year as school_year
 		    		FROM projects p
+                    JOIN school_users su 
+                    ON p.school = su.id
 		    		JOIN category c
 		    		ON p.category = c.id
 		    		JOIN sub_category sc
@@ -108,6 +112,9 @@ class Projects implements ProjectsInterface
                     ON p.sub_category = sc.id
                     JOIN school_year sy
                     ON p.school_year = :schoolYearId
+                    LEFT JOIN project_stakeholders ps
+                    ON p.id = ps.project
+                    WHERE ps.project IS NULL
                     ORDER BY p.implementation_date ASC',
                     ['schoolYearId' => $schoolYearId]
                 );
@@ -157,7 +164,10 @@ class Projects implements ProjectsInterface
                         ON p.sub_category = sc.id
                         JOIN school_year sy
                         ON p.school_year = ?
+                        LEFT JOIN project_stakeholders ps
+                        ON p.id = ps.project
                         WHERE p.category IN ( {$bindingsString} )
+                        AND ps.project IS NULL
                         ORDER BY p.amount ASC
                         ";
             }
@@ -185,7 +195,10 @@ class Projects implements ProjectsInterface
                         ON p.sub_category = sc.id
                         JOIN school_year sy
                         ON p.school_year = ?
+                        LEFT JOIN project_stakeholders ps
+                        ON p.id = ps.project
                         WHERE p.category IN ( {$bindingsString} )
+                        AND ps.project IS NULL
                         ORDER BY p.amount DESC
                         ";
             }
@@ -213,7 +226,10 @@ class Projects implements ProjectsInterface
                     ON p.sub_category = sc.id
                     JOIN school_year sy
                     ON p.school_year = ?
+                    LEFT JOIN project_stakeholders ps
+                    ON p.id = ps.project
                     WHERE p.category IN ( {$bindingsString} )
+                    AND ps.project IS NULL
                     ORDER BY p.implementation_date DESC
                     ";
             }
@@ -246,6 +262,9 @@ class Projects implements ProjectsInterface
                         ON p.sub_category = sc.id
                         JOIN school_year sy
                         ON p.school_year = :schoolYearId
+                        LEFT JOIN project_stakeholders ps
+                        ON p.id = ps.project
+                        WHERE ps.project IS NULL
                         ORDER BY amount ASC
                         ";
             }
@@ -275,12 +294,50 @@ class Projects implements ProjectsInterface
                         ON p.sub_category = sc.id
                         JOIN school_year sy
                         ON p.school_year = :schoolYearId
+                        LEFT JOIN project_stakeholders ps
+                        ON p.id = ps.project
+                        WHERE ps.project IS NULL
                         ORDER BY amount DESC
                         ";
             }
         }
 
         return DB::select($sql, ['schoolYearId' => $schoolYearId]);
+    }
+
+
+    public function addStakeholder(Request $req) 
+    {
+      
+        $req->validate([
+            'projectId' => 'required|numeric',
+            'contactNo' => 'required'
+        ]);     
+
+        $projectId = $req->input('projectId');
+        $stakeholder = Auth::user()->id;
+        $contactNo = $req->input('contactNo');
+        $message = $req->input('message');
+
+        $data = [
+            $projectId,
+            $stakeholder,
+            $contactNo,
+            $message,
+            date('Y-m-d')
+        ];
+
+        DB::insert('INSERT INTO project_stakeholders(project, stakeholder, contact_no, message, date_application) VALUES (?, ?, ?, ?, ?)', $data);
+    }
+
+    public function isStakeholder($stakeholderId, $projectId) {
+
+        $data = array(
+            'stakeholderId' => $stakeholderId,
+            'projectId' => $projectId
+        );
+
+        return DB::raw('SELECT id FROM project_stakeholders WHERE stakeholder = :stakeholderId AND project = :projectId ', $data);
     }
 
 }

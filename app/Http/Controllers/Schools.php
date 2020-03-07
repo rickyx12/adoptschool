@@ -8,6 +8,7 @@ use App\Library\Services\Contracts\CategoryInterface;
 use App\Library\Services\Contracts\SchoolYearInterface;
 use App\Library\Services\Contracts\ProjectsInterface;
 use App\Library\Services\Contracts\UpdatesInterface;
+use App\Library\Services\Contracts\CommentInterface;
 
 class Schools extends Controller
 {
@@ -16,18 +17,21 @@ class Schools extends Controller
 	private $schoolYear;
 	private $projects;
 	private $updates;
+	private $comments;
 
     public function __construct(
     	CategoryInterface $category, 
     	SchoolYearInterface $schoolYear,
     	ProjectsInterface $projects,
-    	UpdatesInterface $updates
+    	UpdatesInterface $updates,
+    	CommentInterface $comments
     ) {
 
     	$this->category = $category;
     	$this->schoolYear = $schoolYear;
     	$this->projects = $projects;
     	$this->updates = $updates;
+    	$this->comments = $comments;
 
     	$this->middleware('auth:schools');
     }
@@ -62,6 +66,18 @@ class Schools extends Controller
 	public function addProjectUpdate(Request $req) 
 	{
 		return $this->updates->addProjectUpdate($req);
+	}
+
+	public function addComment(Request $req) {
+		$this->comments->add($req);
+	}
+
+	public function getComments($projectId) {
+		return response()->json($this->comments->getComments($projectId));
+	}
+
+	public function getSingleComments($commentId, $userType) {
+		return response()->json($this->comments->getSingleComments($commentId, $userType));
 	}
 
 	public function logout() 

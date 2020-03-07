@@ -14,4 +14,6 @@ Interface ProjectsInterface
     public function showAvailableProjects($schoolYearId);
 
     public function showFilteredProjects($schoolYearId, Request $req);
+
+    public function addStakeholder(Request $req);
 }
