@@ -54,6 +54,18 @@ class Schools extends Controller
 		return view('account.schools.projects.index', $data);
 	}
 
+	public function filteredProjects(Request $req) 
+	{
+
+		$data = array(
+			'categories' => $this->category->getCategory(),
+			'schoolYear' => $this->schoolYear->getSchoolYear(),
+			'projects' => $this->projects->showFilteredSchoolProjects(Auth::user()->id, $req)
+		);
+
+		return view('account.schools.projects.index', $data);
+	}
+
 	public function newProject(Request $req) 
 	{
 

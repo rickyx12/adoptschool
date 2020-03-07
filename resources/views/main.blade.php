@@ -47,7 +47,11 @@
               <a href="{{ url('/account/schools') }}" class="nav-link">Dashboard</a>
             </li>
           
-            @if(Request::is('account/schools/projects')) <li class="nav-item active"> @else <li class="nav-item"> @endif
+            @if(Request::is('account/schools/projects') || Request::is('account/schools/projects/filtered')) 
+              <li class="nav-item active"> 
+            @else 
+              <li class="nav-item"> 
+            @endif
               <a href="{{ url('/account/schools/projects') }}" class="nav-link">Projects</a>
             </li>
 

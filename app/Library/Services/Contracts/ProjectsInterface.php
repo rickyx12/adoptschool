@@ -11,6 +11,8 @@ Interface ProjectsInterface
 
     public function getProjects($schoolId);
 
+    public function showFilteredSchoolProjects($schoolId, Request $req); 
+
     public function showAvailableProjects($schoolYearId);
 
     public function showFilteredProjects($schoolYearId, Request $req);

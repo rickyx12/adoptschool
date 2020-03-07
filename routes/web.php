@@ -68,7 +68,8 @@ Route::prefix('/account')->group(function() {
 			Route::post('/updates/add', 'Schools@addProjectUpdate');
 			Route::post('/comments/add', 'Schools@addComment');
 			Route::get('{projectId}/comments', 'Schools@getComments');
-			Route::get('{projectId}/comments/{commentId}/{userType}', 'Schools@getSingleComment');				
+			Route::get('{projectId}/comments/{commentId}/{userType}', 'Schools@getSingleComment');
+			Route::post('/filtered', 'Schools@filteredProjects');				
 		});
 
 	});
