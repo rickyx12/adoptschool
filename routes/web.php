@@ -44,6 +44,8 @@ Route::prefix('/account')->group(function() {
 	Route::get('/stakeholders', 'Stakeholders@index');
 	Route::prefix('/stakeholders')->group(function() {
 		
+		Route::get('/contributions', 'Stakeholders@getProjectContributions');
+
 		Route::get('/projects', 'Stakeholders@projects');
 		Route::prefix('/projects')->group(function() {
 			Route::post('/filtered', 'Stakeholders@showFilteredProjects');

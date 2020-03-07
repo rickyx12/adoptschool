@@ -34,4 +34,40 @@ class Stakeholders implements StakeholdersInterface {
     	DB::insert('INSERT INTO stakeholder_users(email, password, name, sector, subsector, date_register) VALUES (?, ?, ?, ?, ?, ?)', $data);  	
     }
 
+
+    public function getProjectContributions($stakeholderId) 
+    {
+
+        return DB::select('
+                    SELECT p.id, 
+                            su.name as school, 
+                            c.name as category, 
+                            sc.name as sub_category, 
+                            p.qty, p.amount, 
+                            p.students_beneficiary, 
+                            p.personnels_beneficiary, 
+                            p.implementation_date,
+                            p.accountable_person,
+                            p.contact_no, 
+                            p.description, 
+                            sy.school_year as school_year,
+                            ps.approved
+                    FROM projects p
+                    JOIN school_users su
+                    ON p.school = su.id
+                    JOIN category c
+                    ON p.category = c.id
+                    JOIN sub_category sc
+                    ON p.sub_category = sc.id
+                    JOIN school_year sy
+                    ON p.school_year = sy.id
+                    JOIN project_stakeholders ps
+                    ON p.id = ps.project
+                    WHERE ps.stakeholder = :stakeholderId
+                    ORDER BY ps.date_application ASC',
+                    ['stakeholderId' => $stakeholderId]
+                );
+    }
+
+
 }

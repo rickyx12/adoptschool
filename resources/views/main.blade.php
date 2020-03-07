@@ -35,8 +35,8 @@
               <a href="{{ url('account/stakeholders/projects') }}" class="nav-link">Projects</a>
             </li>
 
-            <li class="nav-item">
-              <a href="#" class="nav-link">Contributions</a>
+            @if(Request::is('account/stakeholders/contributions')) <li class="nav-item active"> @else <li class="nav-item"> @endif
+              <a href="{{ url('account/stakeholders/contributions') }}" class="nav-link">Contributions</a>
             </li>
 
           @endauth
@@ -127,6 +127,7 @@
     <!--secured pages-->  
     @yield('stakeholders-dashboard')
     @yield('stakeholders-projects')
+    @yield('stakeholders-contributions')
 
     @yield('schools-dashboard')
     @yield('schools-projects')
@@ -141,6 +142,8 @@
     @stack('login.js')
 
     @stack('stakeholders-projects-scripts')
+    @stack('stakeholders-contributions-scripts')
+
     @stack('schools-projects-scripts')
   </body>
 </html>    

@@ -85,6 +85,8 @@ class Users extends Controller
         if (Auth::guard('stakeholders')->attempt($credentials)) {
             // Authentication passed...
             return redirect()->intended('account/stakeholders');
+        }else {
+            return redirect('/login')->with('error', 'Credentials Incorrect.');
         }
     }
 
@@ -94,6 +96,8 @@ class Users extends Controller
         if (Auth::guard('schools')->attempt($credentials)) {
             // Authentication passed...
             return redirect()->intended('account/schools');
+        }else {
+            return redirect('/login')->with('error', 'Credentials Incorrect.');
         }
     }    
 

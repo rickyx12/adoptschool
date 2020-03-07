@@ -5,7 +5,14 @@
 		<div class="row">
 			<div class="col-md-4"></div>
 			<div class="col-md-4">
-				<div class="card mt-5">
+
+				@if (session('error'))
+				    <div class="alert alert-danger mt-2">
+				        {{ session('error') }}
+				    </div>
+				@endif
+
+				<div class="card mt-3">
 					<div class="card-header bg-info text-white"><h6>Login</h6></div>
 					<div class="card-body">
 						<form id="loginForm" method="POST">
