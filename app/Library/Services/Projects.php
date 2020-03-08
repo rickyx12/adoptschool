@@ -70,7 +70,9 @@ class Projects implements ProjectsInterface
                             p.implementation_date,
                             p.accountable_person,
                             p.contact_no, 
-                            p.description, 
+                            p.description,
+                            p.status,
+                            p.publish, 
                             sy.school_year as school_year
 		    		FROM projects p
                     JOIN school_users su 
@@ -474,6 +476,208 @@ class Projects implements ProjectsInterface
                         LEFT JOIN project_stakeholders ps
                         ON p.id = ps.project
                         WHERE ps.project IS NULL
+                        ORDER BY amount DESC
+                        ";
+            }
+        }
+
+        return DB::select($sql, ['schoolYearId' => $schoolYearId]);
+    }
+
+
+    public function showAvailableProjectsGuest($schoolYearId) 
+    {
+
+        return DB::select('
+                    SELECT p.id, 
+                            su.name as school, 
+                            c.name as category, 
+                            sc.name as sub_category, 
+                            p.qty, p.amount, 
+                            p.students_beneficiary, 
+                            p.personnels_beneficiary, 
+                            p.implementation_date,
+                            p.accountable_person,
+                            p.contact_no, 
+                            p.description, 
+                            sy.school_year as school_year
+                    FROM projects p
+                    JOIN school_users su
+                    ON p.school = su.id
+                    JOIN category c
+                    ON p.category = c.id
+                    JOIN sub_category sc
+                    ON p.sub_category = sc.id
+                    JOIN school_year sy
+                    ON p.school_year = :schoolYearId
+                    ORDER BY p.implementation_date ASC',
+                    ['schoolYearId' => $schoolYearId]
+                );
+    }
+
+
+    public function showFilteredProjectsGuest($schoolYearId, Request $req) 
+    {
+
+        $bindingArr = [];
+
+        $fundSort = $req->input('fundSort');
+        $categorySort = $req->input('categorySort');
+        $categorySort = (array)$categorySort;
+        $bindingsString = implode(',', array_fill(0, count($categorySort), '?'));
+
+        foreach($categorySort as $category) {
+            array_push($bindingArr, $category);
+        }
+
+        array_unshift($bindingArr, $schoolYearId);
+
+        $sql ='';
+
+        if(count($categorySort) > 0) 
+        {
+            if($fundSort === 'low_high') {
+
+                $sql = "
+                        SELECT p.id, 
+                            su.name as school, 
+                            c.name as category, 
+                            sc.name as sub_category, 
+                            p.qty, p.amount, 
+                            p.students_beneficiary, 
+                            p.personnels_beneficiary, 
+                            p.implementation_date,
+                            p.accountable_person,
+                            p.contact_no, 
+                            p.description, 
+                            sy.school_year as school_year
+                        FROM projects p
+                        JOIN school_users su
+                        ON p.school = su.id
+                        JOIN category c
+                        ON p.category = c.id
+                        JOIN sub_category sc
+                        ON p.sub_category = sc.id
+                        JOIN school_year sy
+                        ON p.school_year = ?
+                        WHERE p.category IN ( {$bindingsString} )
+                        ORDER BY p.amount ASC
+                        ";
+            }
+            else if($fundSort === 'high_low') {
+
+                $sql = "
+                        SELECT p.id, 
+                            su.name as school, 
+                            c.name as category, 
+                            sc.name as sub_category, 
+                            p.qty, p.amount, 
+                            p.students_beneficiary, 
+                            p.personnels_beneficiary, 
+                            p.implementation_date,
+                            p.accountable_person,
+                            p.contact_no, 
+                            p.description, 
+                            sy.school_year as school_year
+                        FROM projects p
+                        JOIN school_users su
+                        ON p.school = su.id
+                        JOIN category c
+                        ON p.category = c.id
+                        JOIN sub_category sc
+                        ON p.sub_category = sc.id
+                        JOIN school_year sy
+                        ON p.school_year = ?
+                        WHERE p.category IN ( {$bindingsString} )
+                        ORDER BY p.amount DESC
+                        ";
+            }
+            else 
+            {
+                $sql = "
+                    SELECT p.id, 
+                            su.name as school, 
+                            c.name as category, 
+                            sc.name as sub_category, 
+                            p.qty, p.amount, 
+                            p.students_beneficiary, 
+                            p.personnels_beneficiary, 
+                            p.implementation_date,
+                            p.accountable_person,
+                            p.contact_no, 
+                            p.description, 
+                            sy.school_year as school_year
+                    FROM projects p
+                    JOIN school_users su
+                    ON p.school = su.id
+                    JOIN category c
+                    ON p.category = c.id
+                    JOIN sub_category sc
+                    ON p.sub_category = sc.id
+                    JOIN school_year sy
+                    ON p.school_year = ?
+                    WHERE p.category IN ( {$bindingsString} )
+                    ORDER BY p.implementation_date DESC
+                    ";
+            }
+
+            return DB::select($sql, $bindingArr);
+            
+        }else 
+        {
+            if($fundSort === 'low_high') 
+            {
+                $sql = "
+                        SELECT p.id, 
+                            su.name as school, 
+                            c.name as category, 
+                            sc.name as sub_category, 
+                            p.qty, p.amount, 
+                            p.students_beneficiary, 
+                            p.personnels_beneficiary, 
+                            p.implementation_date,
+                            p.accountable_person,
+                            p.contact_no, 
+                            p.description, 
+                            sy.school_year as school_year
+                        FROM projects p
+                        JOIN school_users su
+                        ON p.school = su.id
+                        JOIN category c
+                        ON p.category = c.id
+                        JOIN sub_category sc
+                        ON p.sub_category = sc.id
+                        JOIN school_year sy
+                        ON p.school_year = :schoolYearId
+                        ORDER BY amount ASC
+                        ";
+            }
+
+
+            if($fundSort === 'high_low') 
+            {
+                $sql = "
+                        SELECT p.id, 
+                            su.name as school, 
+                            c.name as category, 
+                            sc.name as sub_category, 
+                            p.qty, p.amount, 
+                            p.students_beneficiary, 
+                            p.personnels_beneficiary, 
+                            p.implementation_date,
+                            p.accountable_person,
+                            p.contact_no, 
+                            p.description, 
+                            sy.school_year as school_year
+                        FROM projects p
+                        JOIN school_users su
+                        ON p.school = su.id
+                        JOIN category c
+                        ON p.category = c.id
+                        JOIN sub_category sc
+                        ON p.sub_category = sc.id
+                        JOIN school_year sy
+                        ON p.school_year = :schoolYearId
                         ORDER BY amount DESC
                         ";
             }

@@ -46,7 +46,11 @@
 		  		@inject('updates', 'App\Library\Services\Updates')
 
 				<div class="card mb-3">
+				@if($project->publish == 1)
 				  <div class="card-body">
+				@else
+				  <div class="card-body border border-danger">
+				@endif
 				  	<div class="row">
 				  		<div class="col-md">
 				  			<h5 class="card-title mb-2">{{ $project->sub_category }}</h5>
@@ -106,6 +110,29 @@
 					</div>
 					<div class="row">
 						<div class="col-md text-right">
+
+							@if($project->publish == 1)
+								<button 
+									class="btn btn-sm btn-danger" 
+									data-toggle="tooltip" 
+									data-placement="top" 
+									title="Unpublish make this project hiidden from all projects list."
+								>
+									<i class="fa fa-times"></i>
+									Unpublish
+								</button>
+							@else
+								<button 
+									class="btn btn-sm btn-success"
+									data-toggle="tooltip" 
+									data-placement="top" 
+									title="Publish make this project visible from all projects list."
+								>
+									<i class="fa fa-check"></i>
+									Publish
+								</button>								
+							@endif
+
 							<button 
 								class="btn btn-sm btn-info updateProjectBtn" 
 								data-project="{{ $project->id }}" 

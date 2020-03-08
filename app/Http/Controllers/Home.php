@@ -39,17 +39,17 @@ class Home extends Controller
 
 		$data = array(
 			'categories' => $this->category->getCategory(),
-			'projects' => $this->projects->showAvailableProjects($this->schoolYear->getSchoolYear()[0]->id)
+			'projects' => $this->projects->showAvailableProjectsGuest($this->schoolYear->getSchoolYear()[0]->id)
 		);
 
-		return view('account.stakeholders.projects.index', $data);
+		return view('users.projects', $data);
 	}
 
 	public function showFilteredProjects(Request $req) {
 
 		$data = array(
 			'categories' => $this->category->getCategory(),
-			'projects' => $this->projects->showFilteredProjects($this->schoolYear->getSchoolYear()[0]->id, $req)
+			'projects' => $this->projects->showFilteredProjectsGuest($this->schoolYear->getSchoolYear()[0]->id, $req)
 		);
 
 		return view('account.stakeholders.projects.index', $data);
