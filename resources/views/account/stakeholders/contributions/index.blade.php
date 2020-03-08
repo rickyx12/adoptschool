@@ -4,7 +4,7 @@
   <div class="container-fluid">
     <div class="row mt-3">
       <div class="col-md-3 mb-3">
-      	<form id="filterForm" method="POST" action="{{ url('/account/stakeholders/projects/filtered') }}">
+      	<form id="filterForm" method="POST" action="{{ url('/account/stakeholders/contributions/filtered') }}">
       		@csrf
 			<div class="card">
 			  <div class="card-header">
@@ -89,6 +89,14 @@
 					    		<span class="lead" style="font-size: 18px;">
 					    			<b>Contact#</b>: 
 					    			{{ $project->contact_no }}
+					    		</span>
+					    	</li>
+					    	<li>
+					    		<span class="lead" style="font-size: 18px; color:#00b300">
+					    			<b>
+					    				Contribution:
+					    				100,000
+					    			</b>
 					    		</span>
 					    	</li>					    	
 					    </ul>
@@ -185,6 +193,14 @@
 			      							{{ $project->school }}
 			      						</span>
 			      					</li>
+			      					<li>
+			      						<span class="lead" style="font-size: 17px; color: #00b300">
+			      							<b>
+			      								Contribution:
+			      								100,000
+			      							</b>
+			      						</span>
+			      					</li>			      					
 			      					<li>
 			      						<span class="lead" style="font-size: 17px;">
 			      							<b>Stakeholders</b>:

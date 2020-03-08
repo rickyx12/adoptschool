@@ -35,7 +35,11 @@
               <a href="{{ url('account/stakeholders/projects') }}" class="nav-link">Projects</a>
             </li>
 
-            @if(Request::is('account/stakeholders/contributions')) <li class="nav-item active"> @else <li class="nav-item"> @endif
+            @if(Request::is('account/stakeholders/contributions') || Request::is('account/stakeholders/contributions/filtered')) 
+              <li class="nav-item active"> 
+            @else 
+              <li class="nav-item"> 
+            @endif
               <a href="{{ url('account/stakeholders/contributions') }}" class="nav-link">Contributions</a>
             </li>
 

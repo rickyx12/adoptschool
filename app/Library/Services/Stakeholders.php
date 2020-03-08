@@ -70,4 +70,197 @@ class Stakeholders implements StakeholdersInterface {
     }
 
 
+
+    public function getFilteredProjectContributions($stakeholderId, Request $req) 
+    {
+
+        $bindingArr = [];
+
+        $fundSort = $req->input('fundSort');
+        $categorySort = $req->input('categorySort');
+        $categorySort = (array)$categorySort;
+        $bindingsString = implode(',', array_fill(0, count($categorySort), '?'));
+
+        foreach($categorySort as $category) {
+            array_push($bindingArr, $category);
+        }
+
+        array_unshift($bindingArr, $stakeholderId);
+
+        $sql ='';
+
+        if(count($categorySort) > 0) 
+        {
+            if($fundSort === 'low_high') 
+            {
+
+                $sql = "
+                        SELECT p.id, 
+                            su.name as school, 
+                            c.name as category, 
+                            sc.name as sub_category, 
+                            p.qty, p.amount, 
+                            p.students_beneficiary, 
+                            p.personnels_beneficiary, 
+                            p.implementation_date,
+                            p.accountable_person,
+                            p.contact_no, 
+                            p.description, 
+                            sy.school_year as school_year,
+                            ps.approved
+                        FROM projects p
+                        JOIN school_users su
+                        ON p.school = su.id
+                        JOIN category c
+                        ON p.category = c.id
+                        JOIN sub_category sc
+                        ON p.sub_category = sc.id
+                        JOIN school_year sy
+                        ON p.school_year = sy.id
+                        JOIN project_stakeholders ps
+                        ON p.id = ps.project
+                        WHERE ps.stakeholder = ?
+                        AND  p.category IN ( {$bindingsString} )
+                        ORDER BY p.amount ASC
+                        ";
+            }
+            else if($fundSort === 'high_low') {
+
+                $sql = "
+                        SELECT p.id, 
+                            su.name as school, 
+                            c.name as category, 
+                            sc.name as sub_category, 
+                            p.qty, p.amount, 
+                            p.students_beneficiary, 
+                            p.personnels_beneficiary, 
+                            p.implementation_date,
+                            p.accountable_person,
+                            p.contact_no, 
+                            p.description, 
+                            sy.school_year as school_year,
+                            ps.approved
+                        FROM projects p
+                        JOIN school_users su
+                        ON p.school = su.id
+                        JOIN category c
+                        ON p.category = c.id
+                        JOIN sub_category sc
+                        ON p.sub_category = sc.id
+                        JOIN school_year sy
+                        ON p.school_year = sy.id
+                        JOIN project_stakeholders ps
+                        ON p.id = ps.project
+                        WHERE ps.stakeholder = ?
+                        AND p.category IN ( {$bindingsString} )
+                        ORDER BY p.amount DESC
+                        ";
+            }
+            else 
+            {
+                $sql = "
+                    SELECT p.id, 
+                            su.name as school, 
+                            c.name as category, 
+                            sc.name as sub_category, 
+                            p.qty, p.amount, 
+                            p.students_beneficiary, 
+                            p.personnels_beneficiary, 
+                            p.implementation_date,
+                            p.accountable_person,
+                            p.contact_no, 
+                            p.description, 
+                            sy.school_year as school_year,
+                            ps.approved
+                    FROM projects p
+                    JOIN school_users su
+                    ON p.school = su.id
+                    JOIN category c
+                    ON p.category = c.id
+                    JOIN sub_category sc
+                    ON p.sub_category = sc.id
+                    JOIN school_year sy
+                    ON p.school_year = sy.id
+                    JOIN project_stakeholders ps
+                    ON p.id = ps.project
+                    WHERE ps.stakeholder = ?
+                    AND p.category IN ( {$bindingsString} )
+                    ORDER BY p.implementation_date DESC
+                    ";
+            }
+
+            return DB::select($sql, $bindingArr);
+            
+        }else 
+        {
+            if($fundSort === 'low_high') 
+            {
+                $sql = "
+                        SELECT p.id, 
+                            su.name as school, 
+                            c.name as category, 
+                            sc.name as sub_category, 
+                            p.qty, p.amount, 
+                            p.students_beneficiary, 
+                            p.personnels_beneficiary, 
+                            p.implementation_date,
+                            p.accountable_person,
+                            p.contact_no, 
+                            p.description, 
+                            sy.school_year as school_year,
+                            ps.approved
+                        FROM projects p
+                        JOIN school_users su
+                        ON p.school = su.id
+                        JOIN category c
+                        ON p.category = c.id
+                        JOIN sub_category sc
+                        ON p.sub_category = sc.id
+                        JOIN school_year sy
+                        ON p.school_year = sy.id
+                        JOIN project_stakeholders ps
+                        ON p.id = ps.project
+                        WHERE ps.stakeholder = :stakeholderId
+                        ORDER BY amount ASC
+                        ";
+            }
+
+
+            if($fundSort === 'high_low') 
+            {
+                $sql = "
+                        SELECT p.id, 
+                            su.name as school, 
+                            c.name as category, 
+                            sc.name as sub_category, 
+                            p.qty, p.amount, 
+                            p.students_beneficiary, 
+                            p.personnels_beneficiary, 
+                            p.implementation_date,
+                            p.accountable_person,
+                            p.contact_no, 
+                            p.description, 
+                            sy.school_year as school_year,
+                            ps.approved
+                        FROM projects p
+                        JOIN school_users su
+                        ON p.school = su.id
+                        JOIN category c
+                        ON p.category = c.id
+                        JOIN sub_category sc
+                        ON p.sub_category = sc.id
+                        JOIN school_year sy
+                        ON p.school_year = sy.id
+                        JOIN project_stakeholders ps
+                        ON p.id = ps.project
+                        WHERE su.id = :stakeholderId
+                        ORDER BY amount DESC
+                        ";
+            }
+        }
+
+        return DB::select($sql, ['stakeholderId' => $stakeholderId]);
+    }
+
+
 }

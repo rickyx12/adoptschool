@@ -44,14 +44,19 @@ Route::prefix('/account')->group(function() {
 	Route::get('/stakeholders', 'Stakeholders@index');
 	Route::prefix('/stakeholders')->group(function() {
 		
-		Route::get('/contributions', 'Stakeholders@getProjectContributions');
-
 		Route::get('/projects', 'Stakeholders@projects');
 		Route::prefix('/projects')->group(function() {
 			Route::post('/filtered', 'Stakeholders@showFilteredProjects');
 			Route::post('/comments/add', 'Stakeholders@addComment');
 			Route::get('{projectId}/comments', 'Stakeholders@getComments');
-			Route::post('/stakeholders/add', 'Stakeholders@addStakeholder');	
+			Route::post('/stakeholders/add', 'Stakeholders@addStakeholder');
+			Route::post('/filtered', 'Stakeholders@getFilteredProjectContributions');	
+		});
+
+
+		Route::get('/contributions', 'Stakeholders@getProjectContributions');
+		Route::prefix('/contributions')->group(function() {
+			Route::post('/filtered', 'Stakeholders@getFilteredProjectContributions');
 		});
 
 		Route::get('/logout', 'Stakeholders@logout');

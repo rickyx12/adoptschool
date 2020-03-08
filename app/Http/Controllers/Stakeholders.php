@@ -89,6 +89,17 @@ class Stakeholders extends Controller
 		return view('account.stakeholders.contributions.index', $data);
 	}
 
+	public function getFilteredProjectContributions(Request $req) 
+	{
+
+		$data = array(
+			'categories' => $this->category->getCategory(),
+			'projects' => $this->stakeholders->getFilteredProjectContributions(Auth::user()->id, $req)
+		);
+
+		return view('account.stakeholders.contributions.index', $data);
+	}
+
 	public function logout() {
 		Auth::guard('stakeholders')->logout();
 		return redirect('/home');
