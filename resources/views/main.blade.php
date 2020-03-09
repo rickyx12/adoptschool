@@ -24,6 +24,15 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
 
+          <!-----ADMIN MENU-------->
+
+            @if(Request::is('account/admin')) <li class="nav-item active"> @else <li class="nav-item"> @endif
+              <a href="{{ url('/account/admin') }}" class="nav-link">Dashboard</a>
+            </li>          
+
+            @if(Request::is('account/admin/request')) <li class="nav-item active"> @else <li class="nav-item"> @endif
+              <a href="{{ url('/account/admin/request') }}" class="nav-link">Request</a>
+            </li>  
 
           <!----STAKEHOLDERS MENU----->
           @auth('stakeholders')
@@ -68,7 +77,7 @@
 
 
           <!-----GUEST MENU---->
-          @if(Auth::guard('stakeholders')->guest() && Auth::guard('schools')->guest())
+          @if(Auth::guard('stakeholders')->guest() && Auth::guard('schools')->guest() && Auth::guard('admin')->guest())
             @if(Request::is('home')) <li class="nav-item active"> @else <li class="nav-item"> @endif
                 <a class="nav-link" href="{{ url('/home') }}">Home</a>
               </li>
@@ -89,7 +98,7 @@
 
         <ul class="navbar-nav">
 
-          @if(Auth::guard('stakeholders')->guest() && Auth::guard('schools')->guest())
+          @if(Auth::guard('stakeholders')->guest() && Auth::guard('schools')->guest() && Auth::guard('admin')->guest())
             @if(Request::is('stakeholders/registration') || Request::is('school/registration'))
               <li class="nav-item dropdown active">
             @else
@@ -106,6 +115,16 @@
               <a class="nav-link" href="{{ url('/login') }}">Login</a>
             </li>  
           @endif
+
+          @auth('admin')
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">Admin</a>
+              <div class="dropdown-menu">
+                <a href="#" class="dropdown-item">Profile</a>
+                <a href="{{ url('account/admin/logout') }}" class="dropdown-item">Logout</a>
+              </div>
+            </li>
+          @endauth
 
           @auth('stakeholders')
             <li class="nav-item dropdown">
@@ -132,11 +151,15 @@
     </nav>
 
     @yield('home')
+    @yield('admin-registration')
     @yield('stakeholders-registration')
     @yield('school-registration')
     @yield('login')
 
     <!--secured pages-->  
+    @yield('admin-dashboard')
+    @yield('admin-request')
+
     @yield('stakeholders-dashboard')
     @yield('stakeholders-projects')
     @yield('stakeholders-contributions')
@@ -149,6 +172,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     @stack('home-scripts')
+    @stack('admin-registration-scripts')
     @stack('stakeholders-registration-scripts')
     @stack('school-registration-scripts')
     @stack('login.js')

@@ -15,9 +15,21 @@
 //     return view('welcome');
 // });
 
+Route::get('/login', 'Users@login');
+
+
+Route::get('/category', 'Home@getCategory');
+Route::get('region/{regionId}/divisions', 'Users@getDivision');
+
 Route::get('/home', 'Home@index');
 Route::get('/projects', 'Home@projects');
 Route::post('/projects/filtered', 'Home@showFilteredProjects');
+
+Route::prefix('/admin')->group(function() {
+	Route::get('/login', 'Users@adminLogin');
+	Route::get('/registration', 'Users@admin');
+	Route::post('/authenticate', 'Users@adminAuth');
+});
 
 Route::prefix('/stakeholders')->group(function() {
 	Route::get('/registration', 'Users@stakeholder');
@@ -34,13 +46,20 @@ Route::prefix('/school')->group(function() {
 	Route::post('/authenticate', 'Users@schoolsAuth');
 });
 
-Route::get('/login', 'Users@login');
-Route::get('/category', 'Home@getCategory');
-Route::get('region/{regionId}/divisions', 'Users@getDivision');
+
+Route::prefix('/admin')->group(function() {
+	Route::post('/register', 'Users@adminRegister');
+});
 
 
 Route::prefix('/account')->group(function() {
 	
+	Route::get('/admin', 'Admin@index');
+	Route::prefix('/admin')->group(function() {
+		Route::get('/request', 'Admin@request');
+		Route::get('/logout', 'Admin@logout');
+	});
+
 	Route::get('/stakeholders', 'Stakeholders@index');
 	Route::prefix('/stakeholders')->group(function() {
 		

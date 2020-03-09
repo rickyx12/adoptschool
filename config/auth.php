@@ -55,6 +55,10 @@ return [
         'schools' => [
             'driver' => 'session',
             'provider' => 'schools'
+        ],
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'admin'
         ]
     ],
 
@@ -87,6 +91,10 @@ return [
         'schools' => [
             'driver' => 'eloquent',
             'model' => App\SchoolUser::class
+        ],
+        'admin' => [
+            'driver' => 'eloquent',
+            'model' => App\AdminUser::class
         ]
         // 'users' => [
         //     'driver' => 'database',
@@ -123,6 +131,11 @@ return [
         ],
         'schools' => [
             'provider' => 'schools',
+            'table' => 'password_resets',
+            'expire' => 60
+        ],
+        'admin' => [
+            'provider' => 'admin',
             'table' => 'password_resets',
             'expire' => 60
         ]

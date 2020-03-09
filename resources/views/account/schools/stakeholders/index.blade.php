@@ -22,10 +22,11 @@
 			  <div class="card-body">
 			    <h5 class="card-title">
 			    	{{ ucwords($stakeholder->getInformation($project->stakeholder)[0]->name) }}  
-			    	<span class="text-muted">(@money(50000))</span>
 
 			    	@if($project->approved == 0)
 			    		<span class="text-danger ml-2" style="font-size: 11px;">(On Process)</span>
+			    	@else
+			    		<span class="text-muted">(@money(50000))</span>
 			    	@endif
 
 			    </h5>

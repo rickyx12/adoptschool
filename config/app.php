@@ -175,6 +175,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         Igoshev\Captcha\Providers\CaptchaServiceProvider::class,
+        App\Providers\AdminProvider::class,
         App\Providers\StakeholdersProvider::class,
         App\Providers\SchoolProvider::class,
         App\Providers\SchoolYearProvider::class,
