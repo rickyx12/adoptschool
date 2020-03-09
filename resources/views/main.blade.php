@@ -15,7 +15,7 @@
     <title>Adopt-A-School Project</title>
   </head>
   <body>
-    <img src="{{ url('img/banner.png') }}" width="100%" height="100%" />
+    <img src="{{ url('img/banner.png') }}" class="img-fluid" />
     <nav class="navbar navbar-expand-md navbar-dark bg-dark py-0" style="margin-top: -0.12%;">
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>

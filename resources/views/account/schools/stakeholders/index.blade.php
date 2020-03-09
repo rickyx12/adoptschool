@@ -25,7 +25,7 @@
 			    	<span class="text-muted">(@money(50000))</span>
 
 			    	@if($project->approved == 0)
-			    		<span class="text-danger ml-2" style="font-size: 11px;">(Pending request)</span>
+			    		<span class="text-danger ml-2" style="font-size: 11px;">(On Process)</span>
 			    	@endif
 
 			    </h5>
@@ -45,14 +45,13 @@
 
 			 	@if($project->approved == 0)
 				 	<hr>
-				 	<h5 class="lead mt-1">Stakeholders Message</h5>
+				 	<h5 class="lead mt-1">{{ ucwords($stakeholder->getInformation($project->stakeholder)[0]->name) }} Message</h5>
 				 	<div class="jumbotron mb-0">
 				 		{{ $project->message }}
 				 	</div>
 					<small class="form-text text-muted mb-2">
-					  You may contact {{ ucwords($stakeholder->getInformation($project->stakeholder)[0]->name) }} on {{ $project->stakeholder_contact }}
+					  {{ ucwords($stakeholder->getInformation($project->stakeholder)[0]->name) }} wanted to be a stakeholder for this project. please expect a call from us for coordination.
 					</small>
-				 	<button class="btn btn-sm btn-success">Accept</button>
 			 	@endif
 			  </div>
 			</div>
