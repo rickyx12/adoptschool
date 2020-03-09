@@ -294,6 +294,7 @@ class Projects implements ProjectsInterface
                     LEFT JOIN project_stakeholders ps
                     ON p.id = ps.project
                     WHERE ps.project IS NULL
+                    AND p.publish = 1
                     ORDER BY p.implementation_date ASC',
                     ['schoolYearId' => $schoolYearId]
                 );
@@ -347,6 +348,7 @@ class Projects implements ProjectsInterface
                         ON p.id = ps.project
                         WHERE p.category IN ( {$bindingsString} )
                         AND ps.project IS NULL
+                        AND p.publish = 1
                         ORDER BY p.amount ASC
                         ";
             }
@@ -378,6 +380,7 @@ class Projects implements ProjectsInterface
                         ON p.id = ps.project
                         WHERE p.category IN ( {$bindingsString} )
                         AND ps.project IS NULL
+                        AND p.publish = 1
                         ORDER BY p.amount DESC
                         ";
             }
@@ -409,6 +412,7 @@ class Projects implements ProjectsInterface
                     ON p.id = ps.project
                     WHERE p.category IN ( {$bindingsString} )
                     AND ps.project IS NULL
+                    AND p.publish = 1
                     ORDER BY p.implementation_date DESC
                     ";
             }
@@ -420,32 +424,32 @@ class Projects implements ProjectsInterface
             if($fundSort === 'low_high') 
             {
                 $sql = "
-                        SELECT p.id, 
-                            su.name as school, 
-                            c.name as category, 
-                            sc.name as sub_category, 
-                            p.qty, p.amount, 
-                            p.students_beneficiary, 
-                            p.personnels_beneficiary, 
-                            p.implementation_date,
-                            p.accountable_person,
-                            p.contact_no, 
-                            p.description, 
-                            sy.school_year as school_year
-                        FROM projects p
-                        JOIN school_users su
-                        ON p.school = su.id
-                        JOIN category c
-                        ON p.category = c.id
-                        JOIN sub_category sc
-                        ON p.sub_category = sc.id
-                        JOIN school_year sy
-                        ON p.school_year = :schoolYearId
-                        LEFT JOIN project_stakeholders ps
-                        ON p.id = ps.project
-                        WHERE ps.project IS NULL
-                        ORDER BY amount ASC
-                        ";
+                    SELECT p.id, 
+                    su.name as school, 
+                    c.name as category, 
+                    sc.name as sub_category, 
+                    p.qty, p.amount, 
+                    p.students_beneficiary, 
+                    p.personnels_beneficiary, 
+                    p.implementation_date,
+                    p.accountable_person,
+                    p.contact_no, 
+                    p.description, 
+                    sy.school_year as school_year
+                    FROM projects p
+                    JOIN school_users su
+                    ON p.school = su.id
+                    JOIN category c
+                    ON p.category = c.id
+                    JOIN sub_category sc
+                    ON p.sub_category = sc.id
+                    JOIN school_year sy
+                    ON p.school_year = :schoolYearId
+                    LEFT JOIN project_stakeholders ps
+                    ON p.id = ps.project
+                    WHERE ps.project IS NULL
+                    AND p.publish = 1
+                    ORDER BY p.amount ASC";
             }
 
 
@@ -476,7 +480,8 @@ class Projects implements ProjectsInterface
                         LEFT JOIN project_stakeholders ps
                         ON p.id = ps.project
                         WHERE ps.project IS NULL
-                        ORDER BY amount DESC
+                        AND p.publish = 1
+                        ORDER BY p.amount DESC
                         ";
             }
         }
@@ -510,6 +515,7 @@ class Projects implements ProjectsInterface
                     ON p.sub_category = sc.id
                     JOIN school_year sy
                     ON p.school_year = :schoolYearId
+                    WHERE p.publish = 1
                     ORDER BY p.implementation_date ASC',
                     ['schoolYearId' => $schoolYearId]
                 );
@@ -561,6 +567,7 @@ class Projects implements ProjectsInterface
                         JOIN school_year sy
                         ON p.school_year = ?
                         WHERE p.category IN ( {$bindingsString} )
+                        AND p.publish = 1
                         ORDER BY p.amount ASC
                         ";
             }
@@ -589,6 +596,7 @@ class Projects implements ProjectsInterface
                         JOIN school_year sy
                         ON p.school_year = ?
                         WHERE p.category IN ( {$bindingsString} )
+                        AND p.publish = 1
                         ORDER BY p.amount DESC
                         ";
             }
@@ -617,6 +625,7 @@ class Projects implements ProjectsInterface
                     JOIN school_year sy
                     ON p.school_year = ?
                     WHERE p.category IN ( {$bindingsString} )
+                    AND p.publish = 1
                     ORDER BY p.implementation_date DESC
                     ";
             }
@@ -649,6 +658,7 @@ class Projects implements ProjectsInterface
                         ON p.sub_category = sc.id
                         JOIN school_year sy
                         ON p.school_year = :schoolYearId
+                        WHERE p.publish = 1
                         ORDER BY amount ASC
                         ";
             }
@@ -678,6 +688,7 @@ class Projects implements ProjectsInterface
                         ON p.sub_category = sc.id
                         JOIN school_year sy
                         ON p.school_year = :schoolYearId
+                        WHERE p.publish = 1
                         ORDER BY amount DESC
                         ";
             }

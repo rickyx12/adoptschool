@@ -50,7 +50,6 @@ Route::prefix('/account')->group(function() {
 			Route::post('/comments/add', 'Stakeholders@addComment');
 			Route::get('{projectId}/comments', 'Stakeholders@getComments');
 			Route::post('/stakeholders/add', 'Stakeholders@addStakeholder');
-			Route::post('/filtered', 'Stakeholders@getFilteredProjectContributions');	
 		});
 
 

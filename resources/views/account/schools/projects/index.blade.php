@@ -104,7 +104,7 @@
 						</div>
 						<div class="col-md">
 							<div class="jumbotron">
-								<div class="mt-n5">{{ $project->description }}</div>
+								<div>{{ $project->description }}</div>
 							</div>
 						</div>
 					</div>
@@ -307,7 +307,7 @@
 				      			</div>
 				      			<div class="col-md">
 				      				<div class="jumbotron">
-				      					<div class="mt-n5"> {{ $project->description }} </div>
+				      					<div> {{ $project->description }} </div>
 				      				</div>
 				      			</div>
 				      		</div>
