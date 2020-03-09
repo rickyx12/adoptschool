@@ -25,6 +25,7 @@
         <ul class="navbar-nav mr-auto">
 
 
+          <!----STAKEHOLDERS MENU----->
           @auth('stakeholders')
 
             @if(Request::is('account/stakeholders')) <li class="nav-item active"> @else <li class="nav-item"> @endif
@@ -45,6 +46,7 @@
 
           @endauth
 
+          <!---SCHOOLS MENU--->
           @auth('schools')
 
             @if(Request::is('account/schools')) <li class="nav-item active"> @else <li class="nav-item"> @endif
@@ -59,11 +61,13 @@
               <a href="{{ url('/account/schools/projects') }}" class="nav-link">Projects</a>
             </li>
 
-            <li class="nav-item">
-              <a href="#" class="nav-link">Stakeholders</a>
+            @if(Request::is('account/schools/stakeholders'))  <li class="nav-item active"> @else <li class="nav-item"> @endif
+              <a href="{{ url('/account/schools/stakeholders') }}" class="nav-link">Stakeholders</a>
             </li>            
           @endauth
 
+
+          <!-----GUEST MENU---->
           @if(Auth::guard('stakeholders')->guest() && Auth::guard('schools')->guest())
             @if(Request::is('home')) <li class="nav-item active"> @else <li class="nav-item"> @endif
                 <a class="nav-link" href="{{ url('/home') }}">Home</a>

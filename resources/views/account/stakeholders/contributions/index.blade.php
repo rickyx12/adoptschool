@@ -40,7 +40,11 @@
 	  		@inject('comments', 'App\Library\Services\Comment')
 	  		@inject('updates', 'App\Library\Services\Updates')
 
-			<div id="projectCard{{ $project->id }}" class="card mb-3 ml-1 pb-0">
+	  		@if($project->approved == 0)
+				<div id="projectCard{{ $project->id }}" class="card mb-3 ml-1 pb-0 border border-danger">
+			@else
+				<div id="projectCard{{ $project->id }}" class="card mb-3 ml-1 pb-0">
+			@endif
 			  <div class="card-body">
 			  	<div class="row">
 			  		<div class="col-md">

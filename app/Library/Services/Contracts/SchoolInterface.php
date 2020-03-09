@@ -10,4 +10,8 @@ Interface SchoolInterface
     public function register(Request $req);
 
     public function type();
+
+    public function getStakeholdersProject($schoolId);
+
+    public function publishControl(Request $req);
 }

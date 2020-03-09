@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Library\Services\Contracts\SchoolInterface;
 use App\Library\Services\Contracts\CategoryInterface;
 use App\Library\Services\Contracts\SchoolYearInterface;
 use App\Library\Services\Contracts\ProjectsInterface;
@@ -13,6 +14,7 @@ use App\Library\Services\Contracts\CommentInterface;
 class Schools extends Controller
 {
     
+    private $schools;
 	private $category;
 	private $schoolYear;
 	private $projects;
@@ -20,6 +22,7 @@ class Schools extends Controller
 	private $comments;
 
     public function __construct(
+    	SchoolInterface $schools,
     	CategoryInterface $category, 
     	SchoolYearInterface $schoolYear,
     	ProjectsInterface $projects,
@@ -27,6 +30,7 @@ class Schools extends Controller
     	CommentInterface $comments
     ) {
 
+    	$this->schools = $schools;
     	$this->category = $category;
     	$this->schoolYear = $schoolYear;
     	$this->projects = $projects;
@@ -90,6 +94,19 @@ class Schools extends Controller
 
 	public function getSingleComments($commentId, $userType) {
 		return response()->json($this->comments->getSingleComments($commentId, $userType));
+	}
+
+	public function stakeholders() {
+
+		$data = array(
+			'projects' => $this->schools->getStakeholdersProject(Auth::user()->id)
+		);
+
+		return view('account.schools.stakeholders.index', $data);	
+	}
+
+	public function publishControl(Request $req) {
+		return $this->schools->publishControl($req);
 	}
 
 	public function logout() 

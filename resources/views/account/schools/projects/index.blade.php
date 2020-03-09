@@ -45,11 +45,11 @@
 		  		@inject('comments', 'App\Library\Services\Comment')
 		  		@inject('updates', 'App\Library\Services\Updates')
 
-				<div class="card mb-3">
+				<div id="projectCard{{ $project->id }}" class="card mb-3">
 				@if($project->publish == 1)
-				  <div class="card-body">
+				  <div id="projectCardBody{{ $project->id }}" class="card-body">
 				@else
-				  <div class="card-body border border-danger">
+				  <div id="projectCardBody{{ $project->id }}" class="card-body border border-danger">
 				@endif
 				  	<div class="row">
 				  		<div class="col-md">
@@ -109,29 +109,43 @@
 						</div>
 					</div>
 					<div class="row">
+						<div class="col-md">
+							<h4 class="lead">
+								<a href="#" class="mr-2 text-decoration-none text-dark">2 Stakeholders</a> 
+								<a href="#" data-toggle="modal" data-target="#viewModal{{ $project->id }}" class="text-decoration-none text-dark">{{ count($comments->getComments($project->id)) }} Comments</a>
+							</h4>
+						</div>
 						<div class="col-md text-right">
 
-							@if($project->publish == 1)
-								<button 
-									class="btn btn-sm btn-danger" 
-									data-toggle="tooltip" 
-									data-placement="top" 
-									title="Unpublish make this project hiidden from all projects list."
-								>
-									<i class="fa fa-times"></i>
-									Unpublish
-								</button>
-							@else
-								<button 
-									class="btn btn-sm btn-success"
-									data-toggle="tooltip" 
-									data-placement="top" 
-									title="Publish make this project visible from all projects list."
-								>
-									<i class="fa fa-check"></i>
-									Publish
-								</button>								
-							@endif
+							<span id="publishBtnContainer{{ $project->id }}">
+								@if($project->publish == 1)
+									<button
+										id="unpublishBtn{{ $project->id }}" 
+										class="btn btn-sm btn-danger unpublishBtn"
+										data-project="{{ $project->id }}" 
+										data-action="unpublish"
+										data-toggle="tooltip" 
+										data-placement="top" 
+										title="Unpublish make this project hidden from all projects list."
+									>
+										<i class="fa fa-times"></i>
+										Unpublish
+									</button>
+								@else
+									<button 
+										id="publishBtn{{ $project->id }}"
+										class="btn btn-sm btn-success publishBtn"
+										data-project="{{ $project->id }}" 
+										data-action="publish"									
+										data-toggle="tooltip" 
+										data-placement="top" 
+										title="Publish make this project visible from all projects list."
+									>
+										<i class="fa fa-check"></i>
+										Publish
+									</button>								
+								@endif
+							</span>
 
 							<button 
 								class="btn btn-sm btn-info updateProjectBtn" 

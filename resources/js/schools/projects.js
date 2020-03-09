@@ -1,4 +1,66 @@
- $('[data-toggle="tooltip"]').tooltip();
+function publishControl(baseUrl) {
+
+	 $('[data-toggle="tooltip"]').tooltip();
+
+	$('.unpublishBtn, .publishBtn').click(function(e) {
+
+		e.preventDefault();
+
+		let projectId = $(this).data('project');
+		let action = $(this).data('action');
+
+		let data = {
+			projectId: projectId,
+			action: action
+		}
+
+		$.ajax({
+		    headers: {
+		        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+		    },			
+			url: baseUrl+'/account/schools/projects/publish',
+			type: 'POST',
+			data: data,
+			beforeSend: function() {
+				$('#projectCard'+projectId).LoadingOverlay('show');
+			},
+			success: function(result) {
+				
+				$('#projectCard'+projectId).LoadingOverlay('hide');
+				let html = '';
+
+
+				if(action == 'publish') 
+				{
+					$('#publishBtn'+projectId).remove();
+
+					html += "<button id='unpublishBtn"+projectId+"' class='btn btn-sm btn-danger unpublishBtn' data-project='"+projectId+"' data-action='unpublish' data-toggle='tooltip' data-placement='top' title='Unpublish make this project hidden from all projects list.'>";
+						html += "<i class='fa fa-times'></i>";
+						html += " Unpublish";
+					html += "</button>";
+
+					$('#projectCardBody'+projectId).removeClass('border border-danger');
+					$('#publishBtnContainer'+projectId).html(html);
+					publishControl(baseUrl);
+				}else 
+				{
+					$('#unpublishBtn'+projectId).remove();
+
+					html += "<button id='publishBtn"+projectId+"' class='btn btn-sm btn-success publishBtn' data-project='"+projectId+"' data-action='publish' data-toggle='tooltip' data-placement='top' title='Publish make this project visible from all projects list.'>";
+						html += "<i class='fa fa-check'></i>";
+						html += " Publish";
+					html += "</button>";
+
+					$('#projectCardBody'+projectId).addClass('border border-danger');	
+					$('#publishBtnContainer'+projectId).html(html);	
+					publishControl(baseUrl);			
+				}
+
+			}
+		});
+
+	});
+}
 
 function getComments(url, projectId) {
 
@@ -278,5 +340,8 @@ $(function() {
 	    	});
 	    }
 	});
+
+
+	publishControl(baseUrl);
 
 });

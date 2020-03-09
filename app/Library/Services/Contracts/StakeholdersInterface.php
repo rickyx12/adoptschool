@@ -10,4 +10,6 @@ Interface StakeholdersInterface
     public function register(Request $req);
 
     public function getProjectContributions($stakeholderId);
+
+    public function getInformation($stakeholderId);
 }

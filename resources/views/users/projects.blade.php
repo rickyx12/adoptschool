@@ -107,7 +107,8 @@
 					<div class="col-md">
 						<h4 class="lead">
 							<a href="#" class="mr-2 text-decoration-none text-dark">2 Stakeholders</a> 
-							<a href="#" data-toggle="modal" data-target="#viewModal{{ $project->id }}" class="text-decoration-none text-dark">{{ count($comments->getComments($project->id)) }} Comments</a></h4>
+							<a href="#" data-toggle="modal" data-target="#viewModal{{ $project->id }}" class="text-decoration-none text-dark">{{ count($comments->getComments($project->id)) }} Comments</a>
+						</h4>
 					</div>
 					<div class="col-md text-right">
 

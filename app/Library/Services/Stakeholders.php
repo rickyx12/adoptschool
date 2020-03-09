@@ -263,4 +263,18 @@ class Stakeholders implements StakeholdersInterface {
     }
 
 
+    public function getInformation($stakeholderId) 
+    {
+
+        return DB::select('
+                    SELECT su.email, su.name, s.sector, ss.name as sebsector  
+                    FROM stakeholder_users su
+                    JOIN sector s 
+                    ON su.sector = s.id
+                    JOIN sub_sector ss
+                    ON su.subsector = ss.id',
+                    ['stakeholderId' => $stakeholderId]
+                );
+    }
+
 }
