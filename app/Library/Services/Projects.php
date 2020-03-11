@@ -124,7 +124,8 @@ class Projects implements ProjectsInterface
                             p.implementation_date,
                             p.accountable_person,
                             p.contact_no, 
-                            p.description, 
+                            p.description,
+                            p.publish, 
                             sy.school_year as school_year
                         FROM projects p
                         JOIN school_users su
@@ -153,7 +154,8 @@ class Projects implements ProjectsInterface
                             p.implementation_date,
                             p.accountable_person,
                             p.contact_no, 
-                            p.description, 
+                            p.description,
+                            p.publish, 
                             sy.school_year as school_year
                         FROM projects p
                         JOIN school_users su
@@ -182,7 +184,8 @@ class Projects implements ProjectsInterface
                             p.implementation_date,
                             p.accountable_person,
                             p.contact_no, 
-                            p.description, 
+                            p.description,
+                            p.publish, 
                             sy.school_year as school_year
                     FROM projects p
                     JOIN school_users su
@@ -215,7 +218,8 @@ class Projects implements ProjectsInterface
                             p.implementation_date,
                             p.accountable_person,
                             p.contact_no, 
-                            p.description, 
+                            p.description,
+                            p.publish, 
                             sy.school_year as school_year
                         FROM projects p
                         JOIN school_users su
@@ -246,6 +250,7 @@ class Projects implements ProjectsInterface
                             p.accountable_person,
                             p.contact_no, 
                             p.description, 
+                            p.publish,
                             sy.school_year as school_year
                         FROM projects p
                         JOIN school_users su
@@ -732,6 +737,21 @@ class Projects implements ProjectsInterface
         return DB::raw('SELECT id FROM project_stakeholders WHERE stakeholder = :stakeholderId AND project = :projectId ', $data);
     }
 
+    public function getProjectStakeholders($projectId) {
+
+        $data = array(
+            'projectId' => $projectId
+        );
+
+        return DB::select('SELECT su.name
+                            FROM project_stakeholders ps
+                            JOIN stakeholder_users su
+                            ON ps.stakeholder = su.id
+                            WHERE ps.project = :projectId 
+                            AND ps.approved = 1', 
+                            $data
+                        );
+    }
 
     public function getPendingRequestProject() 
     {
@@ -768,6 +788,51 @@ class Projects implements ProjectsInterface
                     ON p.id = ps.project
                     WHERE ps.approved = 0
                     ORDER BY ps.date_application ASC'
+                );
+    }
+
+    public function getSingleProject($projectId) 
+    {
+
+        $data = array(
+            'projectId' => $projectId
+        );
+
+        return DB::select('
+                    SELECT p.id,
+                            ps.id as requestId, 
+                            su.name as school, 
+                            c.name as category, 
+                            sc.name as sub_category,
+                            ps.stakeholder,
+                            ps.contact_no as stakeholder_contact,
+                            ps.approved,
+                            ps.message,
+                            ps.date_application,
+                            ps.quantity_donation, 
+                            p.qty, 
+                            p.amount, 
+                            p.students_beneficiary, 
+                            p.personnels_beneficiary, 
+                            p.implementation_date,
+                            p.accountable_person,
+                            p.contact_no, 
+                            p.description, 
+                            sy.school_year as school_year
+                    FROM projects p
+                    JOIN school_users su
+                    ON p.school = su.id
+                    JOIN category c
+                    ON p.category = c.id
+                    JOIN sub_category sc
+                    ON p.sub_category = sc.id
+                    JOIN school_year sy
+                    ON p.school_year = sy.id
+                    JOIN project_stakeholders ps
+                    ON p.id = ps.project
+                    WHERE p.id = :projectId
+                    ORDER BY ps.date_application ASC',
+                    $data
                 );
     }
 

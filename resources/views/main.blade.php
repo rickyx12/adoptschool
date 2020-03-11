@@ -42,7 +42,11 @@
               <a href="{{ url('/account/stakeholders') }}" class="nav-link">Dashboard</a>
             </li>
           
-             @if(Request::is('account/stakeholders/projects') || Request::is('account/stakeholders/projects/filtered')) <li class="nav-item active"> @else <li class="nav-item"> @endif
+             @if(Request::is('account/stakeholders/projects') || Request::is('account/stakeholders/projects/filtered') || Request::is('project/*')) 
+              <li class="nav-item active"> 
+             @else 
+              <li class="nav-item"> 
+             @endif
               <a href="{{ url('account/stakeholders/projects') }}" class="nav-link">Projects</a>
             </li>
 
@@ -63,7 +67,7 @@
               <a href="{{ url('/account/schools') }}" class="nav-link">Dashboard</a>
             </li>
           
-            @if(Request::is('account/schools/projects') || Request::is('account/schools/projects/filtered')) 
+            @if(Request::is('account/schools/projects') || Request::is('account/schools/projects/filtered') || Request::is('project/*')) 
               <li class="nav-item active"> 
             @else 
               <li class="nav-item"> 
@@ -82,7 +86,12 @@
             @if(Request::is('home')) <li class="nav-item active"> @else <li class="nav-item"> @endif
                 <a class="nav-link" href="{{ url('/home') }}">Home</a>
               </li>
-            @if(Request::is('projects') || Request::is('projects/filtered')) <li class="nav-item active"> @else <li class="nav-item"> @endif
+
+            @if(Request::is('projects') || Request::is('projects/filtered') || Request::is('project/*')) 
+              <li class="nav-item active"> 
+            @else 
+              <li class="nav-item"> 
+            @endif
               <a class="nav-link" href="{{ url('/projects') }}">Projects</a>
             </li>              
             <li class="nav-item">
@@ -152,6 +161,7 @@
     </nav>
 
     @yield('home')
+    @yield('single-project')
     @yield('admin-registration')
     @yield('stakeholders-registration')
     @yield('school-registration')
@@ -173,6 +183,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     @stack('home-scripts')
+    @stack('single-project-scripts')
     @stack('admin-registration-scripts')
     @stack('stakeholders-registration-scripts')
     @stack('school-registration-scripts')

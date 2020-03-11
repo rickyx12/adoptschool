@@ -23,5 +23,11 @@ Interface ProjectsInterface
 
     public function addStakeholder(Request $req);
 
+    public function isStakeholder($stakeholderId, $projectId); 
+
+    public function getProjectStakeholders($projectId);
+
     public function getPendingRequestProject();
+
+    public function getSingleProject($projectId);
 }

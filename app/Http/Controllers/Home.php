@@ -55,4 +55,19 @@ class Home extends Controller
 		return view('account.stakeholders.projects.index', $data);
 	}		
 
+	public function getProject($projectId) {
+
+		$project = $this->projects->getSingleProject($projectId);
+
+		$data = array(
+			'project' => $project
+		);
+
+		if($project) {
+			return view('home.project', $data);
+		}else {
+			abort(404);
+		}
+	}
+
 }

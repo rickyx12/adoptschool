@@ -24,6 +24,7 @@ Route::get('region/{regionId}/divisions', 'Users@getDivision');
 Route::get('/home', 'Home@index');
 Route::get('/projects', 'Home@projects');
 Route::post('/projects/filtered', 'Home@showFilteredProjects');
+Route::get('/project/{projectId}', 'Home@getProject');
 
 Route::prefix('/admin')->group(function() {
 	Route::get('/login', 'Users@adminLogin');
