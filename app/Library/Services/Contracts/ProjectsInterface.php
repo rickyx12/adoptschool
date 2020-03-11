@@ -22,4 +22,6 @@ Interface ProjectsInterface
 	public function showFilteredProjectsGuest($schoolYearId, Request $req);
 
     public function addStakeholder(Request $req);
+
+    public function getPendingRequestProject();
 }

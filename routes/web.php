@@ -28,6 +28,7 @@ Route::post('/projects/filtered', 'Home@showFilteredProjects');
 Route::prefix('/admin')->group(function() {
 	Route::get('/login', 'Users@adminLogin');
 	Route::get('/registration', 'Users@admin');
+	Route::post('/register', 'Users@adminRegister');
 	Route::post('/authenticate', 'Users@adminAuth');
 });
 
@@ -47,16 +48,17 @@ Route::prefix('/school')->group(function() {
 });
 
 
-Route::prefix('/admin')->group(function() {
-	Route::post('/register', 'Users@adminRegister');
-});
-
-
 Route::prefix('/account')->group(function() {
 	
 	Route::get('/admin', 'Admin@index');
 	Route::prefix('/admin')->group(function() {
+		
+
 		Route::get('/request', 'Admin@request');
+		Route::prefix('/request')->group(function(){
+			Route::post('/approved', 'Admin@approved');
+		});
+
 		Route::get('/logout', 'Admin@logout');
 	});
 

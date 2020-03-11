@@ -25,7 +25,7 @@
         <ul class="navbar-nav mr-auto">
 
           <!-----ADMIN MENU-------->
-
+          @auth('admin')
             @if(Request::is('account/admin')) <li class="nav-item active"> @else <li class="nav-item"> @endif
               <a href="{{ url('/account/admin') }}" class="nav-link">Dashboard</a>
             </li>          
@@ -33,7 +33,8 @@
             @if(Request::is('account/admin/request')) <li class="nav-item active"> @else <li class="nav-item"> @endif
               <a href="{{ url('/account/admin/request') }}" class="nav-link">Request</a>
             </li>  
-
+          @endauth
+          
           <!----STAKEHOLDERS MENU----->
           @auth('stakeholders')
 
@@ -177,6 +178,7 @@
     @stack('school-registration-scripts')
     @stack('login.js')
 
+    @stack('admin-request-scripts')
     @stack('stakeholders-projects-scripts')
     @stack('stakeholders-contributions-scripts')
 
