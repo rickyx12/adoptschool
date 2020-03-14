@@ -47,7 +47,7 @@
              @else 
               <li class="nav-item"> 
              @endif
-              <a href="{{ url('account/stakeholders/projects') }}" class="nav-link">Projects</a>
+              <a href="{{ url('account/stakeholders/projects?page=1') }}" class="nav-link">Projects</a>
             </li>
 
             @if(Request::is('account/stakeholders/contributions') || Request::is('account/stakeholders/contributions/filtered')) 
@@ -92,7 +92,7 @@
             @else 
               <li class="nav-item"> 
             @endif
-              <a class="nav-link" href="{{ url('/projects') }}">Projects</a>
+              <a class="nav-link" href="{{ url('/projects?page=1') }}">Projects</a>
             </li>              
             <li class="nav-item">
               <a class="nav-link" href="#">Schools</a>

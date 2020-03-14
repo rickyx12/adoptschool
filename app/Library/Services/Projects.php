@@ -5,6 +5,7 @@ use App\Library\Services\Contracts\ProjectsInterface;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class Projects implements ProjectsInterface
 {
@@ -271,38 +272,40 @@ class Projects implements ProjectsInterface
     }
 
 
-    public function showAvailableProjects($schoolYearId) 
+    public function showAvailableProjects($schoolYearId, Request $req) 
     {
 
-        return DB::select('
-                    SELECT p.id, 
-                            su.name as school, 
-                            c.name as category, 
-                            sc.name as sub_category, 
-                            p.qty, p.amount, 
-                            p.students_beneficiary, 
-                            p.personnels_beneficiary, 
-                            p.implementation_date,
-                            p.accountable_person,
-                            p.contact_no, 
-                            p.description, 
-                            sy.school_year as school_year
-                    FROM projects p
-                    JOIN school_users su
-                    ON p.school = su.id
-                    JOIN category c
-                    ON p.category = c.id
-                    JOIN sub_category sc
-                    ON p.sub_category = sc.id
-                    JOIN school_year sy
-                    ON p.school_year = :schoolYearId
-                    LEFT JOIN project_stakeholders ps
-                    ON p.id = ps.project
-                    WHERE ps.project IS NULL
-                    AND p.publish = 1
-                    ORDER BY p.implementation_date ASC',
-                    ['schoolYearId' => $schoolYearId]
-                );
+        $projects = DB::select('
+	                    SELECT p.id, 
+	                            su.name as school, 
+	                            c.name as category, 
+	                            sc.name as sub_category, 
+	                            p.qty, p.amount, 
+	                            p.students_beneficiary, 
+	                            p.personnels_beneficiary, 
+	                            p.implementation_date,
+	                            p.accountable_person,
+	                            p.contact_no, 
+	                            p.description, 
+	                            sy.school_year as school_year
+	                    FROM projects p
+	                    JOIN school_users su
+	                    ON p.school = su.id
+	                    JOIN category c
+	                    ON p.category = c.id
+	                    JOIN sub_category sc
+	                    ON p.sub_category = sc.id
+	                    JOIN school_year sy
+	                    ON p.school_year = :schoolYearId
+	                    LEFT JOIN project_stakeholders ps
+	                    ON p.id = ps.project
+	                    WHERE ps.project IS NULL
+	                    AND p.publish = 1
+	                    ORDER BY p.implementation_date ASC',
+	                    ['schoolYearId' => $schoolYearId]
+	                );
+
+        return $this->arrayPaginator($projects, $req);
     }
 
     public function showFilteredProjects($schoolYearId, Request $req) 
@@ -422,8 +425,8 @@ class Projects implements ProjectsInterface
                     ";
             }
 
-            return DB::select($sql, $bindingArr);
-            
+            $filteredProjects = DB::select($sql, $bindingArr);
+            return $this->arrayPaginator($filteredProjects, $req);
         }else 
         {
             if($fundSort === 'low_high') 
@@ -491,39 +494,42 @@ class Projects implements ProjectsInterface
             }
         }
 
-        return DB::select($sql, ['schoolYearId' => $schoolYearId]);
+        $filteredProjects = DB::select($sql, ['schoolYearId' => $schoolYearId]);
+        return $this->arrayPaginator($filteredProjects, $req);
     }
 
 
-    public function showAvailableProjectsGuest($schoolYearId) 
+    public function showAvailableProjectsGuest($schoolYearId, Request $req) 
     {
 
-        return DB::select('
-                    SELECT p.id, 
-                            su.name as school, 
-                            c.name as category, 
-                            sc.name as sub_category, 
-                            p.qty, p.amount, 
-                            p.students_beneficiary, 
-                            p.personnels_beneficiary, 
-                            p.implementation_date,
-                            p.accountable_person,
-                            p.contact_no, 
-                            p.description, 
-                            sy.school_year as school_year
-                    FROM projects p
-                    JOIN school_users su
-                    ON p.school = su.id
-                    JOIN category c
-                    ON p.category = c.id
-                    JOIN sub_category sc
-                    ON p.sub_category = sc.id
-                    JOIN school_year sy
-                    ON p.school_year = :schoolYearId
-                    WHERE p.publish = 1
-                    ORDER BY p.implementation_date ASC',
-                    ['schoolYearId' => $schoolYearId]
-                );
+        $projects = DB::select('
+		                    SELECT p.id, 
+		                            su.name as school, 
+		                            c.name as category, 
+		                            sc.name as sub_category, 
+		                            p.qty, p.amount, 
+		                            p.students_beneficiary, 
+		                            p.personnels_beneficiary, 
+		                            p.implementation_date,
+		                            p.accountable_person,
+		                            p.contact_no, 
+		                            p.description, 
+		                            sy.school_year as school_year
+		                    FROM projects p
+		                    JOIN school_users su
+		                    ON p.school = su.id
+		                    JOIN category c
+		                    ON p.category = c.id
+		                    JOIN sub_category sc
+		                    ON p.sub_category = sc.id
+		                    JOIN school_year sy
+		                    ON p.school_year = :schoolYearId
+		                    WHERE p.publish = 1
+		                    ORDER BY p.implementation_date ASC',
+		                    ['schoolYearId' => $schoolYearId]
+		                );
+
+        return $this->arrayPaginator($projects, $req);
     }
 
 
@@ -635,8 +641,8 @@ class Projects implements ProjectsInterface
                     ";
             }
 
-            return DB::select($sql, $bindingArr);
-            
+            $filteredProjects = DB::select($sql, $bindingArr);
+            return $this->arrayPaginator($filteredProjects, $req);
         }else 
         {
             if($fundSort === 'low_high') 
@@ -666,10 +672,7 @@ class Projects implements ProjectsInterface
                         WHERE p.publish = 1
                         ORDER BY amount ASC
                         ";
-            }
-
-
-            if($fundSort === 'high_low') 
+            }else if($fundSort === 'high_low') 
             {
                 $sql = "
                         SELECT p.id, 
@@ -696,10 +699,17 @@ class Projects implements ProjectsInterface
                         WHERE p.publish = 1
                         ORDER BY amount DESC
                         ";
+            }else
+            {
+            	abort(404);
             }
         }
 
-        return DB::select($sql, ['schoolYearId' => $schoolYearId]);
+
+       
+		$filteredProjects = DB::select($sql, ['schoolYearId' => $schoolYearId]);
+		return $this->arrayPaginator($filteredProjects, $req);
+     
     }
 
 
@@ -835,5 +845,23 @@ class Projects implements ProjectsInterface
                     $data
                 );
     }
+
+
+	private function arrayPaginator($array, $request)
+	{
+
+		if(is_numeric($request->get('page'))) {
+
+		    $page = $request->get('page');
+		    $perPage = 2;
+		    $offset = ($page * $perPage) - $perPage;
+
+		    return new LengthAwarePaginator(array_slice($array, $offset, $perPage, true), count($array), $perPage, $page,
+		        ['path' => $request->url(), 'query' => $request->query()]);
+		}else {
+			abort(404);
+		}
+
+	}
 
 }

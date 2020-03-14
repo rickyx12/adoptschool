@@ -35,11 +35,11 @@ class Home extends Controller
 		return view('home.index', $data);
 	}
 
-	public function projects() {
+	public function projects(Request $req) {
 
 		$data = array(
 			'categories' => $this->category->getCategory(),
-			'projects' => $this->projects->showAvailableProjectsGuest($this->schoolYear->getSchoolYear()[0]->id)
+			'projects' => $this->projects->showAvailableProjectsGuest($this->schoolYear->getSchoolYear()[0]->id, $req)
 		);
 
 		return view('users.projects', $data);
@@ -52,7 +52,7 @@ class Home extends Controller
 			'projects' => $this->projects->showFilteredProjectsGuest($this->schoolYear->getSchoolYear()[0]->id, $req)
 		);
 
-		return view('account.stakeholders.projects.index', $data);
+		return view('users.projects', $data);
 	}		
 
 	public function getProject($projectId) {

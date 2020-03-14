@@ -5,11 +5,12 @@
     <div class="row mt-3">
       <div class="col-md-3 mb-3">
       	@if(Auth::guard('stakeholders')->guest() && Auth::guard('schools')->guest())
-      		<form id="filterForm" method="POST" action="{{ url('/projects/filtered') }}">
+      		<form id="filterForm" method="GET" action="{{ url('/projects/filtered') }}">
       	@else
-      		<form id="filterForm" method="POST" action="{{ url('/account/stakeholders/projects/filtered') }}">
+      		<form id="filterForm" method="GET" action="{{ url('/account/stakeholders/projects/filtered') }}">
       	@endif
       		@csrf
+      		<input type="hidden" name="page" value="1">
 			<div class="card">
 			  <div class="card-header">
 			    Filters
@@ -339,6 +340,12 @@
 			</div>
 
 	  	@endforeach
+		<div class="row">
+			<div class="col"></div>
+		  	<div class="col-auto">
+		  		{{ $projects->links() }}
+		  	</div>	
+		</div>	  	
 	  </div>
     </div>
   </div>

@@ -13,11 +13,11 @@ Interface ProjectsInterface
 
     public function showFilteredSchoolProjects($schoolId, Request $req); 
 
-    public function showAvailableProjects($schoolYearId);
+    public function showAvailableProjects($schoolYearId, Request $req);
 
     public function showFilteredProjects($schoolYearId, Request $req);
 
-	public function showAvailableProjectsGuest($schoolYearId);
+	public function showAvailableProjectsGuest($schoolYearId, Request $req);
 
 	public function showFilteredProjectsGuest($schoolYearId, Request $req);
 

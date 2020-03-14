@@ -23,7 +23,7 @@ Route::get('region/{regionId}/divisions', 'Users@getDivision');
 
 Route::get('/home', 'Home@index');
 Route::get('/projects', 'Home@projects');
-Route::post('/projects/filtered', 'Home@showFilteredProjects');
+Route::get('/projects/filtered', 'Home@showFilteredProjects');
 Route::get('/project/{projectId}', 'Home@getProject');
 
 Route::prefix('/admin')->group(function() {
@@ -68,7 +68,7 @@ Route::prefix('/account')->group(function() {
 		
 		Route::get('/projects', 'Stakeholders@projects');
 		Route::prefix('/projects')->group(function() {
-			Route::post('/filtered', 'Stakeholders@showFilteredProjects');
+			Route::get('/filtered', 'Stakeholders@showFilteredProjects');
 			Route::post('/comments/add', 'Stakeholders@addComment');
 			Route::get('{projectId}/comments', 'Stakeholders@getComments');
 			Route::post('/stakeholders/add', 'Stakeholders@addStakeholder');
