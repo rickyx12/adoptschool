@@ -56,38 +56,40 @@ class Projects implements ProjectsInterface
       	DB::insert('INSERT INTO projects(school, category, sub_category, qty, amount, students_beneficiary, personnels_beneficiary, implementation_date, accountable_person, contact_no, school_year, description, date_added) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $data);
     }
 
-    public function getProjects($schoolId) 
+    public function getProjects($schoolId, Request $req) 
     {
 
-    	return DB::select('
-		    		SELECT  p.id,
-                            su.name as school,
-                            c.name as category, 
-                            sc.name as sub_category, 
-                            p.qty, 
-                            p.amount, 
-                            p.students_beneficiary, 
-                            p.personnels_beneficiary, 
-                            p.implementation_date,
-                            p.accountable_person,
-                            p.contact_no, 
-                            p.description,
-                            p.status,
-                            p.publish, 
-                            sy.school_year as school_year
-		    		FROM projects p
-                    JOIN school_users su 
-                    ON p.school = su.id
-		    		JOIN category c
-		    		ON p.category = c.id
-		    		JOIN sub_category sc
-		    		ON p.sub_category = sc.id
-		    		JOIN school_year sy
-		    		ON p.school_year = sy.id
-		    		WHERE p.school = :schoolId
-		    		ORDER BY implementation_date ASC', 
-		    		['schoolId' => $schoolId]
-		    	);
+    	$projects = DB::select('
+        		    		SELECT  p.id,
+                                    su.name as school,
+                                    c.name as category, 
+                                    sc.name as sub_category, 
+                                    p.qty, 
+                                    p.amount, 
+                                    p.students_beneficiary, 
+                                    p.personnels_beneficiary, 
+                                    p.implementation_date,
+                                    p.accountable_person,
+                                    p.contact_no, 
+                                    p.description,
+                                    p.status,
+                                    p.publish, 
+                                    sy.school_year as school_year
+        		    		FROM projects p
+                            JOIN school_users su 
+                            ON p.school = su.id
+        		    		JOIN category c
+        		    		ON p.category = c.id
+        		    		JOIN sub_category sc
+        		    		ON p.sub_category = sc.id
+        		    		JOIN school_year sy
+        		    		ON p.school_year = sy.id
+        		    		WHERE p.school = :schoolId
+        		    		ORDER BY implementation_date ASC', 
+        		    		['schoolId' => $schoolId]
+        		    	);
+
+        return $this->arrayPaginator($projects, $req);
     }
 
 
@@ -197,12 +199,14 @@ class Projects implements ProjectsInterface
                     ON p.sub_category = sc.id
                     JOIN school_year sy
                     ON p.school_year = sy.id
-                    WHERE p.category IN ( {$bindingsString} )
+                    WHERE su.id = ? 
+                    AND p.category IN ( {$bindingsString} )
                     ORDER BY p.implementation_date DESC
                     ";
             }
 
-            return DB::select($sql, $bindingArr);
+            $filteredProjects = DB::select($sql, $bindingArr);
+            return $this->arrayPaginator($filteredProjects, $req);
             
         }else 
         {
@@ -234,10 +238,7 @@ class Projects implements ProjectsInterface
                         WHERE su.id = :schoolId
                         ORDER BY amount ASC
                         ";
-            }
-
-
-            if($fundSort === 'high_low') 
+            }else if($fundSort === 'high_low') 
             {
                 $sql = "
                         SELECT p.id, 
@@ -265,10 +266,13 @@ class Projects implements ProjectsInterface
                         WHERE su.id = :schoolId
                         ORDER BY amount DESC
                         ";
+            }else {
+                abort(404);
             }
         }
 
-        return DB::select($sql, ['schoolId' => $schoolId]);
+        $filteredProjects = DB::select($sql, ['schoolId' => $schoolId]);
+        return $this->arrayPaginator($filteredProjects, $req);
     }
 
 

@@ -95,7 +95,7 @@ Route::prefix('/account')->group(function() {
 			Route::post('/comments/add', 'Schools@addComment');
 			Route::get('{projectId}/comments', 'Schools@getComments');
 			Route::get('{projectId}/comments/{commentId}/{userType}', 'Schools@getSingleComment');
-			Route::post('/filtered', 'Schools@filteredProjects');
+			Route::get('/filtered', 'Schools@filteredProjects');
 			Route::post('/publish', 'Schools@publishControl');				
 		});
 

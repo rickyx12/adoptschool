@@ -46,13 +46,13 @@ class Schools extends Controller
 		return view('account.schools.dashboard.index');
 	}
 
-	public function projects() 
+	public function projects(Request $req) 
 	{
 
 		$data = array(
 			'categories' => $this->category->getCategory(),
 			'schoolYear' => $this->schoolYear->getSchoolYear(),
-			'projects' => $this->projects->getProjects(Auth::user()->id)
+			'projects' => $this->projects->getProjects(Auth::user()->id, $req)
 		);
 
 		return view('account.schools.projects.index', $data);

@@ -9,8 +9,9 @@
     </div>
     <div class="row">
 		  <div class="col-md-3 mb-3">
-		  	<form id="filterForm" method="POST" action="{{ url('/account/schools/projects/filtered') }}">
+		  	<form id="filterForm" method="get" action="{{ url('/account/schools/projects/filtered') }}">
 		  		@csrf
+		  		<input type="hidden" name="page" value="1">
 				<div class="card">
 				  <div class="card-header">
 				    Filters
@@ -369,6 +370,14 @@
 				</div> 
 
     		@endforeach
+
+			<div class="row">
+				<div class="col"></div>
+			  	<div class="col-auto">
+			  		{{ $projects->links() }}
+			  	</div>	
+			</div>
+
     	</div>
     	<div class="col-md-2"></div>
     </div>

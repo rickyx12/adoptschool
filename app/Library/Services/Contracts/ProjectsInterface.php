@@ -9,7 +9,7 @@ Interface ProjectsInterface
 
     public function add($schoolId, $categoryId, Request $req);
 
-    public function getProjects($schoolId);
+    public function getProjects($schoolId, Request $req);
 
     public function showFilteredSchoolProjects($schoolId, Request $req); 
 

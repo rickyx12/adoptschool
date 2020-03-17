@@ -72,7 +72,7 @@
             @else 
               <li class="nav-item"> 
             @endif
-              <a href="{{ url('/account/schools/projects') }}" class="nav-link">Projects</a>
+              <a href="{{ url('/account/schools/projects?page=1') }}" class="nav-link">Projects</a>
             </li>
 
             @if(Request::is('account/schools/stakeholders'))  <li class="nav-item active"> @else <li class="nav-item"> @endif
