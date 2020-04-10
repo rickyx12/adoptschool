@@ -7,10 +7,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="{{ url('../resources/library/bootstrap4.4.1/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url('../resources/library/jquery-ui1.12.1/jquery-ui.css') }}">
     <link rel="stylesheet" href="{{ url('../resources/css/fontawesome-free/css/all.min.css') }}">
-     <link rel="stylesheet" href="{{ url('../resources/css/custom.css') }}">
+    <link rel="stylesheet" href="{{ url('../resources/css/custom.css') }}">
 
     <title>Adopt-A-School Project</title>
   </head>
@@ -47,7 +47,7 @@
              @else 
               <li class="nav-item"> 
              @endif
-              <a href="{{ url('account/stakeholders/projects?page=1') }}" class="nav-link">Projects</a>
+              <a href="{{ url('account/stakeholders/projects') }}" class="nav-link">Projects</a>
             </li>
 
             @if(Request::is('account/stakeholders/contributions') || Request::is('account/stakeholders/contributions/filtered')) 
@@ -72,7 +72,7 @@
             @else 
               <li class="nav-item"> 
             @endif
-              <a href="{{ url('/account/schools/projects?page=1') }}" class="nav-link">Projects</a>
+              <a href="{{ url('/account/schools/projects') }}" class="nav-link">Projects</a>
             </li>
 
             @if(Request::is('account/schools/stakeholders'))  <li class="nav-item active"> @else <li class="nav-item"> @endif
@@ -92,7 +92,7 @@
             @else 
               <li class="nav-item"> 
             @endif
-              <a class="nav-link" href="{{ url('/projects?page=1') }}">Projects</a>
+              <a class="nav-link" href="{{ url('/projects') }}">Projects</a>
             </li>              
             <li class="nav-item">
               <a class="nav-link" href="#">Schools</a>
@@ -167,6 +167,9 @@
     @yield('school-registration')
     @yield('login')
 
+    <!--guest---->
+    @yield('guest-projects')
+
     <!--secured pages-->  
     @yield('admin-dashboard')
     @yield('admin-request')
@@ -178,15 +181,16 @@
     @yield('schools-dashboard')
     @yield('schools-projects')
 
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="{{ url('../resources/js/jquery1.12.4/jquery.js') }}"></script>
+    <script src="{{ url('../resources/js/popper.min.js') }}"></script>
+    <script src="{{ url('../resources/library/bootstrap4.4.1/bootstrap.min.js') }}"></script>
+    <script src="{{ url('../resources/library/jquery-ui1.12.1/jquery-ui.js') }}"></script>
     @stack('home-scripts')
     @stack('single-project-scripts')
     @stack('admin-registration-scripts')
     @stack('stakeholders-registration-scripts')
     @stack('school-registration-scripts')
+    @stack('guest-projects-scripts')
     @stack('login.js')
 
     @stack('admin-request-scripts')

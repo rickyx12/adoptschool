@@ -11,9 +11,9 @@ Interface ProjectsInterface
 
     public function getProjects($schoolId, Request $req);
 
-    public function showFilteredSchoolProjects($schoolId, Request $req); 
+    public function getProjectsByImplementationDate($schoolId, Request $req); 
 
-    public function showAvailableProjects($schoolYearId, Request $req);
+    public function showAvailableProjects($schoolYearId, $stakeholderId, Request $req);
 
     public function showFilteredProjects($schoolYearId, Request $req);
 
@@ -30,4 +30,8 @@ Interface ProjectsInterface
     public function getPendingRequestProject();
 
     public function getSingleProject($projectId);
+
+    public function delete(Request $req);
+
+    public function getTotalApprovedQty($projectId);
 }

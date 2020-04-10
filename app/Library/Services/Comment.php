@@ -44,7 +44,7 @@ class Comment implements CommentInterface
             'projectId' => $projectId
         );
 
-        $comments = DB::select('SELECT * FROM comments WHERE project = :projectId',$data);
+        $comments = DB::select('SELECT * FROM comments WHERE project = :projectId ORDER BY id DESC LIMIT 3',$data);
 
         foreach($comments as $comment) {
 
@@ -52,7 +52,7 @@ class Comment implements CommentInterface
             {
                  $comment = DB::select('
                                 SELECT 
-                                    c.comment, stakeholders.name
+                                    c.comment, stakeholders.name, c.date_added
                                 FROM comments c
                                 JOIN stakeholder_users stakeholders
                                 ON stakeholders.id = c.user 
@@ -66,7 +66,51 @@ class Comment implements CommentInterface
             { 
                 $comment = DB::select('
                                 SELECT 
-                                    c.comment, school.name 
+                                    c.comment, school.name, c.date_added 
+                                FROM comments c
+                                JOIN school_users school
+                                ON school.id = c.user 
+                                WHERE c.id = :commentId',
+                                ['commentId' => $comment->id]
+                            );         
+                array_push($outputArr, $comment[0]);
+            }  
+        }
+
+        return array_reverse($outputArr);
+    }
+
+    public function getAllComments($projectId) {
+
+        $outputArr = array();
+
+        $data = array(
+            'projectId' => $projectId
+        );
+
+        $comments = DB::select('SELECT * FROM comments WHERE project = :projectId ORDER BY id ASC',$data);
+
+        foreach($comments as $comment) {
+
+            if($comment->user_type === 'stakeholders') 
+            {
+                 $comment = DB::select('
+                                SELECT 
+                                    c.comment, stakeholders.name, c.date_added
+                                FROM comments c
+                                JOIN stakeholder_users stakeholders
+                                ON stakeholders.id = c.user 
+                                WHERE c.id = :commentId', 
+                                ['commentId' => $comment->id]
+                            );
+
+                 array_push($outputArr, $comment[0]);
+            } 
+            else
+            { 
+                $comment = DB::select('
+                                SELECT 
+                                    c.comment, school.name, c.date_added 
                                 FROM comments c
                                 JOIN school_users school
                                 ON school.id = c.user 

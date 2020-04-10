@@ -8,15 +8,14 @@
 
 	<div class="container-fluid mt-3">
 	  <div class="row">
-	  	<div class="col-md-1"></div>
-	  	<div class="col-md-10">
+	  	<div class="col-md-2"></div>
+	  	<div class="col-md-8">
 			<div class="card">
 			  <div class="card-body">
 			  	<div class="row">
 			  		<div class="col-md">
-				  		<h4 style="font-size: 23px;">{{ $project[0]->sub_category }}</h4>
-				  		<h6 class="text-muted">{{ $project[0]->school }}</h6>
-				  		<hr>			  			
+				  		<h4 class="card-title">{{ $project[0]->sub_category }}</h4>
+				  		<h6 class="card-subtitle text-muted">{{ $project[0]->school }}</h6>			  			
 			  		</div>
 			  	</div>
 			  	<div class="row">
@@ -38,53 +37,56 @@
 				  				</ul>
 				  			</li>
 				  		</ul>
+
 		  			</div>
 		  			<div class="col-md">
 		  				<h5 class="lead">Project Description</h5>
 				  		<div class="jumbotron">
 				  			{{ $project[0]->description }}
-				  		</div>
-
-				  		<?php
-
-				  			$maxValue = ($project[0]->qty/$project[0]->qty)*100;
-				  			$currentValue = ($project[0]->quantity_donation/$project[0]->qty)*100;
-				  		?>
-
-				  		<h6 class="lead">Project Progress</h6>
-						<div class="progress mb-3">
-						  <div class="progress-bar" role="progressbar" style="width: {{ $currentValue  }}%;" aria-valuenow="{{ $currentValue }}" aria-valuemin="0" aria-valuemax="{{ $maxValue }}">{{ $project[0]->quantity_donation." / ".$project[0]->qty }}</div>
-						</div>				  				  				
+				  		</div>		  				  				
 		  			</div>
 		  		</div>
 		  		<div class="row">
-		  			<div class="col-md">
-		  				<h6>Updates</h6>
+		  			<div class="col-md mt-2">
+	
+				  		<h6 class="lead">Project Progress</h6>
+				  		<div class="progress">
 
-	      				@foreach($updates->getProjectUpdates($project[0]->id) as $update)
-		      				<div class="row mb-n4">
-		      					<div class="col-md">
-									<div class="jumbotron jumbotron-fluid pt-1 pb-1">
-										<div class="container">
-									    	<h6 class="mb-0" style="font-size: 14px;">@formatDate($update->date_update)</h6>
-									    	<span class="mt-0" style="font-size: 14px;">{{ $update->update_message }}</span>
-										</div>
-									</div>
-								</div>
-		      				</div>
-	      				@endforeach		  				
+				  			<?php
+
+				  				$approvedQTY = $projects->getTotalApprovedQty($project[0]->id)[0]->approvedQTY;
+				  				$percentage = $approvedQTY / $project[0]->qty;
+				  				$percentageVal = $percentage * 100;
+				  			?>
+
+							<div class="progress-bar bg-success" role="progressbar" style="width: {{ $percentageVal }}%;" aria-valuenow="{{ $approvedQTY }}" aria-valuemin="0" aria-valuemax="{{ $project[0]->qty }}">
+								{{ $approvedQTY }} / {{ $project[0]->qty }}
+							</div>
+						</div>	  				
 		  			</div>
-		  			<div class="col-md">
+		  			<div id="comments" class="col-md mt-2">
+
 		  				<h6>Comments</h6>
 
-	      				<div id="schoolComments">
+	      				<div v-if="latestComments" id="schoolComments">
 		      				@foreach($comments->getComments($project[0]->id) as $comment)
 			      				<div class="row mb-n4">
 			      					<div class="col-md">
 										<div class="jumbotron jumbotron-fluid pt-1 pb-1">
 											<div class="container">
-										    	<h6 class="mb-0" style="font-size: 14px;">
-										    		{{ ucwords($comment->name) }}</h6>
+										    	<span class="font-weight-bold" style="font-size: 14px;">
+										    		{{ ucwords($comment->name) }}
+										    	</span>
+										    	<span class="ml-1" style="font-size:12px;">
+										    		
+										    		<?php
+										    			$date = explode(" ", $comment->date_added)
+										    		?>
+
+										    		(@formatDate($date[0]))
+				
+										    	</span>
+										    	<br>										    	
 										    	<span class="mt-0" style="font-size: 14px;">{{ $comment->comment }}</span>
 											</div>
 										</div>
@@ -92,29 +94,45 @@
 			      				</div>
 		      				@endforeach
 	      				</div>
+
+	      				<div v-if="allComments">
+	      					<all-comments
+	      						v-for="comment in comments"
+	      						:key="comment.id"
+	      						:name="comment.name"
+	      						:comment="comment.comment"
+	      						:date="comment.date_added"
+	      					></all-comments>
+	      				</div>
+
 	      				<div class="row">
 	      					<div class="col-md">
+	      						<a href="#" v-if="latestComments" @click.prevent="getAllComments({{ $project[0]->id }})" class="text-decoration-none" style="font-size: 13px;">View more comments</a>
 	      						@if(Auth::guard('schools')->check() || Auth::guard('stakeholders')->check() || Auth::guard('admin')->check())
-		      						<textarea id="commentField{{ $project[0]->id }}" class="form-control commentField" data-id="{{ $project[0]->id }}" cols="5" rows="2" placeholder="Write comment here then Press Enter."></textarea>
+		      						<textarea @keyup.13="addComment({{ $project[0]->id }})" v-model="userComment" class="form-control commentField" cols="5" rows="2" placeholder="Write comment here then Press Enter."></textarea>
 							        <div id="errorComment{{ $project[0]->id }}"></div>
 							    @else
+							    	<br>
 								    <small class="text-muted mr-2">
 								      Login to comment.
 								    </small>									    	
 						        @endif
 	      					</div>
-	      				</div>		  				
+	      				</div>
+
 		  			</div>
 		  		</div>
 			  </div>
 			</div>	  		
 	  	</div>
-	  	<div class="col-md-1"></div>
+	  	<div class="col-md-2"></div>
 	  </div>
 	</div>
 @endsection
 
 @push('single-project-scripts')
-	<script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.6/dist/loadingoverlay.min.js"></script>
-    <script src="{{ url('../resources/js/singleProject.js') }}"></script>
+	<script src="{{ url('../resources/library/vuejs/vue.js') }}"></script>
+	<script src="{{ url('../resources/library/axios/axios.min.js') }}"></script>
+	<script src="{{ url('../resources/library/loadingoverlay2.1.6/loadingoverlay.min.js') }}"></script>
+    <script type="module" src="{{ url('../resources/js/singleProject.js') }}"></script>
 @endpush

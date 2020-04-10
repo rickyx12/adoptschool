@@ -43,13 +43,14 @@ class Stakeholders extends Controller
 
 	public function projects(Request $req) 
 	{
+		return view('account.stakeholders.projects.index');
+	}
 
-		$data = array(
-			'categories' => $this->category->getCategory(),
-			'projects' => $this->projects->showAvailableProjects($this->schoolYear->getSchoolYear()[0]->id, $req)
-		);
+	public function projectsJSON(Request $req)
+	{
 
-		return view('account.stakeholders.projects.index', $data);
+		$projects = $this->projects->showAvailableProjects($this->schoolYear->getSchoolYear()[0]->id, Auth::user()->id, $req);
+		return response()->json($projects);
 	}
 
 	public function showFilteredProjects(Request $req) 

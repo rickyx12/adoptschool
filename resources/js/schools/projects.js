@@ -1,3 +1,456 @@
+import formatDate from '../formatDate.js';
+import { BASE_URL } from '../baseUrl.js';
+
+var newProjectMixin = {
+	data() {
+		return {
+			errorNeeds: false,
+			errorNeedsMsg: '',
+			errorNeedsMsgInvalid: '',
+			errorQty: false,
+			errorQtyMsg: '',
+			errorQtyInvalid: '',
+			errorAmount: false,
+			errorAmountMsg: '',
+			errorAmountInvalid: '',
+			errorStudentsBeneficiary: false,
+			errorStudentsBeneficiaryMsg: '',
+			errorStudentsBeneficiaryInvalid: '',
+			errorPersonnelsBeneficiary: false,
+			errorPersonnelsBeneficiaryMsg: '',
+			errorPersonnelsBeneficiaryInvalid: '',
+			errorImplementationDate: false,
+			errorImplementationDateMsg: '',
+			errorImplementationDateInvalid: '',
+			errorAccountablePerson: false,
+			errorAccountablePersonMsg: '',
+			errorAccountablePersonInvalid: '',
+			errorContactNo: false,
+			errorContactNoMsg: '',
+			errorContactNoInvalid: '',
+			errorSchoolYear: false,
+			errorSchoolYearMsg: '',
+			errorSchoolYearInvalid: '',
+			errorDescription: false,
+			errorDescriptionMsg: '',
+			errorDescriptionInvalid: ''
+		}
+	}
+}
+
+Vue.component('projects',{
+	props: {
+		project: Object
+	},
+	filters:{
+		formatDate
+	},
+	template:`
+
+	  		<div class="col-md-4 mb-3">
+				<div :id="'projectCard'+project.id" class="card h-100">
+				  <div class="card-body d-flex flex-column">
+				  	<div class="row">
+				  		<div class="col-md">
+				  			<h5 class="card-title">{{ project.sub_category }}</h5>
+				  			<h6 class="card-subtitle mb-2 text-muted">{{ project.school }}</h6>	
+				  		</div>
+				    </div>
+					    <ul>
+					    	<li>
+					    		<span class="lead" style="font-size: 16px;">
+						    		<b>Estimated Amount</b>: 
+						    		₱{{ project.amount.toLocaleString() }}
+					    		</span>
+					    	</li>
+					    	<li>
+					    		<span class="lead" style="font-size: 16px;">
+					    			<b>Quantity</b>: 
+					    			{{ project.qty }}
+					    		</span>
+					    	</li>
+					    	<li>
+					    		<span class="lead" style="font-size: 16px;">
+					    			<b>No. of Beneficiary Students</b>: 
+					    			{{ project.students_beneficiary }}
+					    		</span>
+					    	</li>
+					    	<li>
+					    		<span class="lead" style="font-size: 16px;">
+					    			<b>No. of Beneficiary Personnels</b>: 
+					    			{{ project.personnels_beneficiary }}
+					    		</span>
+					    	</li>
+					    	<li>
+					    		<span class="lead" style="font-size: 16px;">
+					    			<b>Implementation Date</b>: 
+					    			{{ project.implementation_date | formatDate }}
+					    		</span>
+					    	</li>					    	
+					    	<li>
+					    		<span class="lead" style="font-size: 16px;">
+					    			<b>Contact Person</b>: 
+					    			{{ project.accountable_person }}
+					    		</span>
+					    	</li>
+					    	<li>
+					    		<span class="lead" style="font-size: 16px;">
+					    			<b>Contact#</b>: 
+					    			{{ project.contact_no }}
+					    		</span>
+					    	</li>
+					    	<li>
+					    		<span class="lead" style="font-size: 16px;">
+					    			<b>Date Encoded</b>: 
+					    			{{ project.date_added | formatDate }}
+					    		</span>
+					    	</li>					    						    	
+					    </ul>
+						
+						<div class="border-top my-3"></div>
+
+						<p class="card-text" style="font-size: 16px;">
+							{{ project.description }}
+						</p>
+
+						<div class="progress mt-auto">
+						  <div class="progress-bar bg-success" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+						</div>					
+				
+						<div class="d-flex d-row justify-content-center">
+							<a href="${BASE_URL}/project/'+project.id" target="_blank" class="mt-3 text-decoration-none mb-auto m-1 btn btn-sm btn-primary">
+								View
+							</a>
+							<a href="#" data-toggle="modal" :data-target="'#deleteModal'+project.id" class="mt-3 text-decoration-none mb-auto m-1 btn btn-sm btn-danger">
+								Delete
+							</a>								
+				  		</div>			
+				  </div>
+
+					<div class="modal fade" :id="'deleteModal'+project.id" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+					  <div class="modal-dialog" role="document">
+					    <div class="modal-content">
+					      <div class="modal-header">
+					        <h5 class="modal-title" id="exampleModalLabel">Delete</h5>
+					        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					          <span aria-hidden="true">&times;</span>
+					        </button>
+					      </div>
+					      <div class="modal-body">
+					        Delete Project in <b>{{ project.sub_category }}</b>?
+					      </div>
+					      <div class="modal-footer">
+					        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					        <button type="button" @click="deleteProject" class="btn btn-danger">Delete</button>
+					      </div>
+					    </div>
+					  </div>
+					</div>
+
+				</div>
+			</div>		
+
+	`,
+	methods: {
+		deleteProject() {
+			this.$emit('delete')
+		}
+	},	
+});
+
+new Vue({ 
+	el: '#projectsSchool',
+	mixins:[newProjectMixin],
+	data: function() 
+	{
+		return {
+			offset: 0,
+			rowCount: 3,
+			projects:[],
+			needs:'',
+			qty:'',
+			amount:'',
+			studentsBeneficiary:'',
+			personnelsBeneficiary:'',
+			accountablePerson:'',
+			contactNo:'',
+			schoolYear:'',
+			description:'',
+			projectFilter: 'dateEncoded'
+		}
+	},
+	created() {
+
+		this.getProjectByDateEncoded({offset: this.offset, rowCount: this.rowCount})
+		.then((response) => {
+			this.projects = response.data;
+			this.offset += 3;
+		})
+		.catch((errors) => {
+			console.log(errors);
+		})
+		.finally(() => {
+			$.LoadingOverlay('hide');
+		})
+	},
+	methods: {
+		getProjectByDateEncoded: function(data) {
+
+			$.LoadingOverlay('show');
+			return axios.post(`${BASE_URL}/account/schools/projects/json`, data);
+		},
+		getProjectByImplementationDate: function(data) {
+
+			$.LoadingOverlay('show');
+			return axios.post(`${BASE_URL}/account/schools/projects/implementation-date`, data);
+		},
+		newProject: function() {
+
+			$.LoadingOverlay('show');
+
+			let data = {
+				needs: this.needs,
+				qty: this.qty,
+				amount: this.amount,
+				studentsBeneficiary: this.studentsBeneficiary,
+				personnelsBeneficiary: this.personnelsBeneficiary,
+				implementationDate: $('#implementationDate').val(),
+				accountablePerson: this.accountablePerson,
+				contactNo: this.contactNo,
+				schoolYear: this.schoolYear,
+				description: this.description
+			}
+
+			axios.post(`${BASE_URL}/account/schools/projects/add`, data)
+			.then((response) => {
+
+				$('#newProjectModal').modal('toggle');
+
+				this.needs = '';
+				this.qty = '';
+				this.amount = '';
+				this.studentsBeneficiary = '';
+				this.personnelsBeneficiary = '';
+				this.implementationDate = '';
+				this.accountablePerson = '';
+				this.contactNo = '';
+				this.schoolYear = '';
+				this.description = '';
+
+				this.errorNeeds = false;
+				this.errorNeedsMsg = '';
+				this.errorNeedsMsgInvalid = '';
+				this.errorQty = false;
+				this.errorQtyMsg = '';
+				this.errorQtyInvalid = '';
+				this.errorAmount = false;
+				this.errorAmountMsg = '';
+				this.errorAmountInvalid = '';
+				this.errorStudentsBeneficiary = false;
+				this.errorStudentsBeneficiaryMsg = '';
+				this.errorStudentsBeneficiaryInvalid = '';
+				this.errorPersonnelsBeneficiary = false;
+				this.errorPersonnelsBeneficiaryMsg = '';
+				this.errorPersonnelsBeneficiaryInvalid = '';
+				this.errorImplementationDate = false;
+				this.errorImplementationDateMsg = '';
+				this.errorImplementationDateInvalid = '';
+				this.errorAccountablePerson = false;
+				this.errorAccountablePersonMsg = '';
+				this.errorAccountablePersonInvalid = '';
+				this.errorContactNo = false;
+				this.errorContactNoMsg = '';
+				this.errorContactNoInvalid = '';
+				this.errorSchoolYear = false;
+				this.errorSchoolYearMsg = '';
+				this.errorSchoolYearInvalid = '';
+				this.errorDescription = false;
+				this.errorDescriptionMsg = '';
+				this.errorDescriptionInvalid = '';
+
+				this.offset = 0;
+				this.getProjectByDateEncoded({offset: this.offset, rowCount: 3})
+				.then((response) => {
+					this.projects = response.data;
+					this.offset += 3;
+				})
+				.catch((errors) => {
+					console.log(errors);
+				})
+				.finally(() => {
+
+					$.LoadingOverlay('hide');
+
+					Swal.fire(
+					  'Success!',
+					  'New Project added',
+					  'success'
+					)
+				})				
+			})
+			.catch((error) => {
+
+				$.LoadingOverlay('hide');
+				
+				if(error.response.data.errors.needs) {
+					this.errorNeeds = true;
+					this.errorNeedsMsgInvalid = 'is-invalid';
+					this.errorNeedsMsg = error.response.data.errors.needs[0];					
+				}
+
+				if(error.response.data.errors.qty) {
+					this.errorQty = true;
+					this.errorQtyInvalid = 'is-invalid';
+					this.errorQtyMsg = error.response.data.errors.qty[0];
+				}
+
+				if(error.response.data.errors.amount) {
+					this.errorAmount = true;
+					this.errorAmountInvalid = 'is-invalid';
+					this.errorAmountMsg = error.response.data.errors.amount[0];
+				}
+
+				if(error.response.data.errors.studentsBeneficiary) {
+					this.errorStudentsBeneficiary = true;
+					this.errorStudentsBeneficiaryInvalid = 'is-invalid';
+					this.errorStudentsBeneficiaryMsg = error.response.data.errors.studentsBeneficiary[0];
+				}
+
+				if(error.response.data.errors.personnelsBeneficiary) {
+					this.errorPersonnelsBeneficiary = true;
+					this.errorPersonnelsBeneficiaryInvalid = 'is-invalid';
+					this.errorPersonnelsBeneficiaryMsg = error.response.data.errors.personnelsBeneficiary[0];
+				}
+
+				if(error.response.data.errors.implementationDate) {
+					this.errorImplementationDate = true;
+					this.errorImplementationDateInvalid = 'is-invalid';
+					this.errorImplementationDateMsg = error.response.data.errors.implementationDate[0];
+				}
+
+				if(error.response.data.errors.accountablePerson) {
+					this.errorAccountablePerson = true;
+					this.errorAccountablePersonInvalid = 'is-invalid';
+					this.errorAccountablePersonMsg = error.response.data.errors.accountablePerson[0];
+				}
+
+				if(error.response.data.errors.contactNo) {
+					this.errorContactNo = true;
+					this.errorContactNoInvalid = 'is-invalid';
+					this.errorContactNoMsg = error.response.data.errors.contactNo[0];
+				}
+
+				if(error.response.data.errors.schoolYear) {
+					this.errorSchoolYear = true;
+					this.errorSchoolYearInvalid = 'is-invalid';
+					this.errorSchoolYearMsg = error.response.data.errors.schoolYear[0];
+				}
+
+				if(error.response.data.errors.description) {
+					this.errorDescription = true;
+					this.errorDescriptionInvalid = 'is-invalid';
+					this.errorDescriptionMsg = error.response.data.errors.description[0];
+				}
+			})
+			.finally(() => {
+				$.LoadingOverlay('hide');
+			})
+
+		},
+		viewMoreProjects: function() {
+
+			let projectSource = null;
+
+			if(this.projectFilter === "implementationDate") {
+				projectSource = this.getProjectByImplementationDate({offset: this.offset, rowCount: this.rowCount});
+			}else {
+				projectSource = this.getProjectByDateEncoded({offset: this.offset, rowCount: this.rowCount});
+			}
+
+			projectSource
+			.then((response) => {
+
+				this.projects = this.projects.concat(response.data);
+				this.offset += 3;
+			})
+			.catch((error) => {
+				console.log(error)
+			})
+			.finally(() => {
+				$.LoadingOverlay('hide');
+			})
+		},
+		deleteProject: function(projectId) {
+
+			let projectSource;
+
+			let data = {
+				projectId: projectId
+			}
+
+			$.LoadingOverlay('show');
+
+			axios.post(`${BASE_URL}/account/schools/projects/delete`, data)
+			.then((response) => {
+				
+				if(this.projectFilter === "implementationDate") {
+					this.offset = 0
+					projectSource = this.getProjectByImplementationDate({offset: this.offset, rowCount: 3});
+					this.offset += 3;
+				}else {
+					this.offset = 0;
+					projectSource = this.getProjectByDateEncoded({offset: this.offset, rowCount: 3});
+					this.offset += 3;
+				}
+
+				projectSource
+				.then((response) => {
+					this.projects = response.data;
+					$('#deleteModal'+projectId).modal('toggle');
+				})
+				.catch((errors) => {
+					console.log(errors);
+				})
+				.finally(() => {
+					$.LoadingOverlay('hide');
+				})
+
+			})
+			.catch((errors) => {
+				console.log(errors);
+			})
+			.finally(() => {
+				$.LoadingOverlay('hide')
+			})
+		},
+		filterProjects: function() {
+			
+			let projectSource = null;
+
+			if(this.projectFilter ==="implementationDate") {
+				this.offset = 0;
+				projectSource = this.getProjectByImplementationDate({offset: this.offset, rowCount: this.rowCount});
+				this.offset += 3;
+			}else {
+				this.offset = 0;
+				projectSource = this.getProjectByDateEncoded({offset: this.offset, rowCount: this.rowCount});
+				this.offset += 3;
+			}
+
+
+			projectSource.then((response) => {
+				this.projects = response.data
+			})
+			.catch((errors) => {
+				console.log(errors);
+			})
+			.finally(() => {
+				$.LoadingOverlay('hide')
+			})
+		}		
+	}		
+})
+
 function publishControl(baseUrl) {
 
 	 $('[data-toggle="tooltip"]').tooltip();
@@ -18,7 +471,7 @@ function publishControl(baseUrl) {
 		    headers: {
 		        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 		    },			
-			url: baseUrl+'/account/schools/projects/publish',
+			// url: baseUrl+'/account/schools/projects/publish',
 			type: 'POST',
 			data: data,
 			beforeSend: function() {
@@ -41,7 +494,7 @@ function publishControl(baseUrl) {
 
 					$('#projectCardBody'+projectId).removeClass('border border-danger');
 					$('#publishBtnContainer'+projectId).html(html);
-					publishControl(baseUrl);
+					// publishControl(baseUrl);
 				}else 
 				{
 					$('#unpublishBtn'+projectId).remove();
@@ -53,7 +506,7 @@ function publishControl(baseUrl) {
 
 					$('#projectCardBody'+projectId).addClass('border border-danger');	
 					$('#publishBtnContainer'+projectId).html(html);	
-					publishControl(baseUrl);			
+					// publishControl(baseUrl);			
 				}
 
 			}
@@ -96,14 +549,12 @@ function getComments(url, projectId) {
 
 $(function() {
 
-	var baseUrl = 'http://localhost/school/public';
-
-	$('.number-format').toArray().forEach(function(field){
-		new Cleave(field, {
-			numeral: true,
-			numeralThousandsGroupStyle: 'thousand'
-		});
-	})
+	// $('.number-format').toArray().forEach(function(field){
+	// 	new Cleave(field, {
+	// 		numeral: true,
+	// 		numeralThousandsGroupStyle: 'thousand'
+	// 	});
+	// })
 
 	$('.updateProjectBtn').click(function() {
 
@@ -129,7 +580,7 @@ $(function() {
 			    headers: {
 			        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 			    },	    		
-	    		url: baseUrl+'/account/schools/projects/updates/add',
+	    		// url: baseUrl+'/account/schools/projects/updates/add',
 	    		type: 'POST',
 	    		data: data,
 	    		beforeSend: function() {
@@ -207,7 +658,7 @@ $(function() {
 		    headers: {
 		        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 		    },    		
-    		url: baseUrl+'/account/schools/projects/add',
+    		// url: baseUrl+'/account/schools/projects/add',
     		type: 'POST',
     		data: data,
     		beforeSend: function() {
@@ -307,7 +758,7 @@ $(function() {
 			    headers: {
 			        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
 			    }, 	    		
-	    		url: baseUrl+'/account/schools/projects/comments/add',
+	    		// url: baseUrl+'/account/schools/projects/comments/add',
 	    		type: 'POST',
 	    		data: data,
 	    		beforeSend: function() {
@@ -320,7 +771,7 @@ $(function() {
 	    			$('#commentField'+projectId).prop('disabled', false);
 	    			$('#commentField'+projectId).LoadingOverlay('hide');
 
-	    			getComments(baseUrl, projectId);
+	    			// getComments(baseUrl, projectId);
 
 	    		},
 	    		error: function(request, status, error) {
@@ -342,6 +793,6 @@ $(function() {
 	});
 
 
-	publishControl(baseUrl);
+	// publishControl(baseUrl);
 
 });

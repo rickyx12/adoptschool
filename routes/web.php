@@ -21,10 +21,16 @@ Route::get('/login', 'Users@login');
 Route::get('/category', 'Home@getCategory');
 Route::get('region/{regionId}/divisions', 'Users@getDivision');
 
+Route::prefix('/project')->group(function() {
+	Route::get('/{projectId}', 'Home@getProject');
+	Route::get('/{projectId}/comments/all', 'Comments@getAllComments');
+	Route::get('/{projectId}/approved-qty', 'Home@getTotalApprovedQty');
+});
+
 Route::get('/home', 'Home@index');
 Route::get('/projects', 'Home@projects');
-Route::get('/projects/filtered', 'Home@showFilteredProjects');
-Route::get('/project/{projectId}', 'Home@getProject');
+Route::post('/projects/json', 'Home@projectsJSON');
+Route::post('/projects/filtered', 'Home@showFilteredProjects');
 
 Route::prefix('/admin')->group(function() {
 	Route::get('/login', 'Users@adminLogin');
@@ -72,6 +78,7 @@ Route::prefix('/account')->group(function() {
 			Route::post('/comments/add', 'Stakeholders@addComment');
 			Route::get('{projectId}/comments', 'Stakeholders@getComments');
 			Route::post('/stakeholders/add', 'Stakeholders@addStakeholder');
+			Route::post('/json','Stakeholders@projectsJSON');
 		});
 
 
@@ -91,12 +98,14 @@ Route::prefix('/account')->group(function() {
 		Route::post('/projects/add', 'Schools@newProject');
 
 		Route::prefix('/projects')->group(function() {
+			Route::post('/json', 'Schools@projectsJSON');
 			Route::post('/updates/add', 'Schools@addProjectUpdate');
 			Route::post('/comments/add', 'Schools@addComment');
 			Route::get('{projectId}/comments', 'Schools@getComments');
 			Route::get('{projectId}/comments/{commentId}/{userType}', 'Schools@getSingleComment');
-			Route::get('/filtered', 'Schools@filteredProjects');
-			Route::post('/publish', 'Schools@publishControl');				
+			Route::post('/implementation-date', 'Schools@projectsByImplementationDate');
+			Route::post('/publish', 'Schools@publishControl');
+			Route::post('/delete', 'Schools@delete');				
 		});
 
 		Route::get('/stakeholders', 'Schools@stakeholders');

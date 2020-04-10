@@ -14,7 +14,6 @@ class Projects implements ProjectsInterface
     {
       
     	$req->validate([
-    		'needs' => 'required|numeric',
     		'qty' => 'required|numeric',
     		'amount' => 'required|numeric',
     		'studentsBeneficiary' => 'required|numeric',
@@ -59,6 +58,16 @@ class Projects implements ProjectsInterface
     public function getProjects($schoolId, Request $req) 
     {
 
+        if($req->has('offset') && $req->has('rowCount')) 
+        {
+            $offset = $req->input('offset');
+            $rowCount = $req->input('rowCount');
+        }else 
+        {
+            $offset = 0;
+            $rowCount = 3;
+        }
+
     	$projects = DB::select('
         		    		SELECT  p.id,
                                     su.name as school,
@@ -73,7 +82,7 @@ class Projects implements ProjectsInterface
                                     p.contact_no, 
                                     p.description,
                                     p.status,
-                                    p.publish, 
+                                    p.date_added, 
                                     sy.school_year as school_year
         		    		FROM projects p
                             JOIN school_users su 
@@ -85,205 +94,91 @@ class Projects implements ProjectsInterface
         		    		JOIN school_year sy
         		    		ON p.school_year = sy.id
         		    		WHERE p.school = :schoolId
-        		    		ORDER BY implementation_date ASC', 
-        		    		['schoolId' => $schoolId]
+        		    		ORDER BY p.id DESC
+                            LIMIT :offset, :rowCount', 
+        		    		[
+                                'schoolId' => $schoolId,
+                                'offset' => $offset,
+                                'rowCount' => $rowCount
+                            ]
         		    	);
 
-        return $this->arrayPaginator($projects, $req);
+        return $projects;
     }
 
 
-    public function showFilteredSchoolProjects($schoolId, Request $req) 
+    public function getProjectsByImplementationDate($schoolId, Request $req) 
     {
 
-        $bindingArr = [];
-
-        $fundSort = $req->input('fundSort');
-        $categorySort = $req->input('categorySort');
-        $categorySort = (array)$categorySort;
-        $bindingsString = implode(',', array_fill(0, count($categorySort), '?'));
-
-        foreach($categorySort as $category) {
-            array_push($bindingArr, $category);
-        }
-
-        array_unshift($bindingArr, $schoolId);
-
-        $sql ='';
-
-        if(count($categorySort) > 0) 
+        if($req->has('offset') && $req->has('rowCount')) 
         {
-            if($fundSort === 'low_high') 
-            {
-
-                $sql = "
-                        SELECT p.id, 
-                            su.name as school, 
-                            c.name as category, 
-                            sc.name as sub_category, 
-                            p.qty, p.amount, 
-                            p.students_beneficiary, 
-                            p.personnels_beneficiary, 
-                            p.implementation_date,
-                            p.accountable_person,
-                            p.contact_no, 
-                            p.description,
-                            p.publish, 
-                            sy.school_year as school_year
-                        FROM projects p
-                        JOIN school_users su
-                        ON p.school = su.id
-                        JOIN category c
-                        ON p.category = c.id
-                        JOIN sub_category sc
-                        ON p.sub_category = sc.id
-                        JOIN school_year sy
-                        ON p.school_year = sy.id
-                        WHERE su.id = ?
-                        AND  p.category IN ( {$bindingsString} )
-                        ORDER BY p.amount ASC
-                        ";
-            }
-            else if($fundSort === 'high_low') {
-
-                $sql = "
-                        SELECT p.id, 
-                            su.name as school, 
-                            c.name as category, 
-                            sc.name as sub_category, 
-                            p.qty, p.amount, 
-                            p.students_beneficiary, 
-                            p.personnels_beneficiary, 
-                            p.implementation_date,
-                            p.accountable_person,
-                            p.contact_no, 
-                            p.description,
-                            p.publish, 
-                            sy.school_year as school_year
-                        FROM projects p
-                        JOIN school_users su
-                        ON p.school = su.id
-                        JOIN category c
-                        ON p.category = c.id
-                        JOIN sub_category sc
-                        ON p.sub_category = sc.id
-                        JOIN school_year sy
-                        ON p.school_year = sy.id
-                        WHERE su.id = ?
-                        AND p.category IN ( {$bindingsString} )
-                        ORDER BY p.amount DESC
-                        ";
-            }
-            else 
-            {
-                $sql = "
-                    SELECT p.id, 
-                            su.name as school, 
-                            c.name as category, 
-                            sc.name as sub_category, 
-                            p.qty, p.amount, 
-                            p.students_beneficiary, 
-                            p.personnels_beneficiary, 
-                            p.implementation_date,
-                            p.accountable_person,
-                            p.contact_no, 
-                            p.description,
-                            p.publish, 
-                            sy.school_year as school_year
-                    FROM projects p
-                    JOIN school_users su
-                    ON p.school = su.id
-                    JOIN category c
-                    ON p.category = c.id
-                    JOIN sub_category sc
-                    ON p.sub_category = sc.id
-                    JOIN school_year sy
-                    ON p.school_year = sy.id
-                    WHERE su.id = ? 
-                    AND p.category IN ( {$bindingsString} )
-                    ORDER BY p.implementation_date DESC
-                    ";
-            }
-
-            $filteredProjects = DB::select($sql, $bindingArr);
-            return $this->arrayPaginator($filteredProjects, $req);
-            
+            $offset = $req->input('offset');
+            $rowCount = $req->input('rowCount');
         }else 
         {
-            if($fundSort === 'low_high') 
-            {
-                $sql = "
-                        SELECT p.id, 
-                            su.name as school, 
-                            c.name as category, 
-                            sc.name as sub_category, 
-                            p.qty, p.amount, 
-                            p.students_beneficiary, 
-                            p.personnels_beneficiary, 
-                            p.implementation_date,
-                            p.accountable_person,
-                            p.contact_no, 
-                            p.description,
-                            p.publish, 
-                            sy.school_year as school_year
-                        FROM projects p
-                        JOIN school_users su
-                        ON p.school = su.id
-                        JOIN category c
-                        ON p.category = c.id
-                        JOIN sub_category sc
-                        ON p.sub_category = sc.id
-                        JOIN school_year sy
-                        ON p.school_year = sy.id
-                        WHERE su.id = :schoolId
-                        ORDER BY amount ASC
-                        ";
-            }else if($fundSort === 'high_low') 
-            {
-                $sql = "
-                        SELECT p.id, 
-                            su.name as school, 
-                            c.name as category, 
-                            sc.name as sub_category, 
-                            p.qty, p.amount, 
-                            p.students_beneficiary, 
-                            p.personnels_beneficiary, 
-                            p.implementation_date,
-                            p.accountable_person,
-                            p.contact_no, 
-                            p.description, 
-                            p.publish,
-                            sy.school_year as school_year
-                        FROM projects p
-                        JOIN school_users su
-                        ON p.school = su.id
-                        JOIN category c
-                        ON p.category = c.id
-                        JOIN sub_category sc
-                        ON p.sub_category = sc.id
-                        JOIN school_year sy
-                        ON p.school_year = sy.id
-                        WHERE su.id = :schoolId
-                        ORDER BY amount DESC
-                        ";
-            }else {
-                abort(404);
-            }
+            $offset = 0;
+            $rowCount = 3;
         }
 
-        $filteredProjects = DB::select($sql, ['schoolId' => $schoolId]);
-        return $this->arrayPaginator($filteredProjects, $req);
+        $projects = DB::select('
+                            SELECT  p.id,
+                                    su.name as school,
+                                    c.name as category, 
+                                    sc.name as sub_category, 
+                                    p.qty, 
+                                    p.amount, 
+                                    p.students_beneficiary, 
+                                    p.personnels_beneficiary, 
+                                    p.implementation_date,
+                                    p.accountable_person,
+                                    p.contact_no, 
+                                    p.description,
+                                    p.status,
+                                    p.date_added, 
+                                    sy.school_year as school_year
+                            FROM projects p
+                            JOIN school_users su 
+                            ON p.school = su.id
+                            JOIN category c
+                            ON p.category = c.id
+                            JOIN sub_category sc
+                            ON p.sub_category = sc.id
+                            JOIN school_year sy
+                            ON p.school_year = sy.id
+                            WHERE p.school = :schoolId
+                            ORDER BY p.implementation_date DESC
+                            LIMIT :offset, :rowCount', 
+                            [
+                                'schoolId' => $schoolId,
+                                'offset' => $offset,
+                                'rowCount' => $rowCount
+                            ]
+                        );
+
+        return $projects;
     }
 
-
-    public function showAvailableProjects($schoolYearId, Request $req) 
+    public function showAvailableProjects($schoolYearId, $stakeholderId, Request $req) 
     {
+
+        if($req->has('offset') && $req->has('rowCount')) 
+        {
+            $offset = $req->input('offset');
+            $rowCount = $req->input('rowCount');
+        }
+        else 
+        {
+            $offset = 0;
+            $rowCount = 3;
+        }
 
         $projects = DB::select('
 	                    SELECT p.id, 
 	                            su.name as school, 
 	                            c.name as category, 
-	                            sc.name as sub_category, 
+	                            sc.name as sub_category,
+                                ps.id as fundedProject,
+                                ps.approved as fundedProjectStatus, 
 	                            p.qty, p.amount, 
 	                            p.students_beneficiary, 
 	                            p.personnels_beneficiary, 
@@ -301,15 +196,18 @@ class Projects implements ProjectsInterface
 	                    ON p.sub_category = sc.id
 	                    JOIN school_year sy
 	                    ON p.school_year = :schoolYearId
-	                    LEFT JOIN project_stakeholders ps
-	                    ON p.id = ps.project
-	                    WHERE ps.project IS NULL
-	                    AND p.publish = 1
-	                    ORDER BY p.implementation_date ASC',
-	                    ['schoolYearId' => $schoolYearId]
+                        LEFT JOIN project_stakeholders ps
+                        ON p.id = ps.project
+	                    ORDER BY p.implementation_date ASC
+                        LIMIT :offset, :rowCount',
+	                    [
+                            'schoolYearId' => $schoolYearId,
+                            'offset' => $offset,
+                            'rowCount' => $rowCount
+                        ]
 	                );
 
-        return $this->arrayPaginator($projects, $req);
+        return $projects;
     }
 
     public function showFilteredProjects($schoolYearId, Request $req) 
@@ -506,6 +404,16 @@ class Projects implements ProjectsInterface
     public function showAvailableProjectsGuest($schoolYearId, Request $req) 
     {
 
+        if($req->has('offset') && $req->has('rowCount')) 
+        {
+            $offset = $req->input('offset');
+            $rowCount = $req->input('rowCount');
+        }else 
+        {
+            $offset = 0;
+            $rowCount = 3;
+        }
+
         $projects = DB::select('
 		                    SELECT p.id, 
 		                            su.name as school, 
@@ -529,11 +437,16 @@ class Projects implements ProjectsInterface
 		                    JOIN school_year sy
 		                    ON p.school_year = :schoolYearId
 		                    WHERE p.publish = 1
-		                    ORDER BY p.implementation_date ASC',
-		                    ['schoolYearId' => $schoolYearId]
+		                    ORDER BY p.implementation_date ASC
+                            LIMIT :offset, :rowCount',
+		                    [
+                                'schoolYearId' => $schoolYearId,
+                                'offset' => $offset,
+                                'rowCount' => $rowCount
+                            ]
 		                );
 
-        return $this->arrayPaginator($projects, $req);
+        return $projects;
     }
 
 
@@ -645,8 +558,7 @@ class Projects implements ProjectsInterface
                     ";
             }
 
-            $filteredProjects = DB::select($sql, $bindingArr);
-            return $this->arrayPaginator($filteredProjects, $req);
+            return $filteredProjects = DB::select($sql, $bindingArr);
         }else 
         {
             if($fundSort === 'low_high') 
@@ -711,9 +623,7 @@ class Projects implements ProjectsInterface
 
 
        
-		$filteredProjects = DB::select($sql, ['schoolYearId' => $schoolYearId]);
-		return $this->arrayPaginator($filteredProjects, $req);
-     
+		return DB::select($sql, ['schoolYearId' => $schoolYearId]);
     }
 
 
@@ -814,16 +724,9 @@ class Projects implements ProjectsInterface
 
         return DB::select('
                     SELECT p.id,
-                            ps.id as requestId, 
                             su.name as school, 
                             c.name as category, 
                             sc.name as sub_category,
-                            ps.stakeholder,
-                            ps.contact_no as stakeholder_contact,
-                            ps.approved,
-                            ps.message,
-                            ps.date_application,
-                            ps.quantity_donation, 
                             p.qty, 
                             p.amount, 
                             p.students_beneficiary, 
@@ -842,10 +745,7 @@ class Projects implements ProjectsInterface
                     ON p.sub_category = sc.id
                     JOIN school_year sy
                     ON p.school_year = sy.id
-                    JOIN project_stakeholders ps
-                    ON p.id = ps.project
-                    WHERE p.id = :projectId
-                    ORDER BY ps.date_application ASC',
+                    WHERE p.id = :projectId',
                     $data
                 );
     }
@@ -867,5 +767,27 @@ class Projects implements ProjectsInterface
 		}
 
 	}
+
+    public function delete(Request $req)
+    {
+        $data = array('projectId' => $req->input('projectId'));
+        return DB::delete('DELETE FROM projects WHERE id = :projectId', $data);
+    }
+
+    public function getTotalApprovedQty($projectId) 
+    {
+
+        $data = array(
+            'projectId' => $projectId
+        );
+
+        return DB::select('
+                    SELECT SUM(quantity_donation) as approvedQTY
+                    FROM project_stakeholders
+                    WHERE project = :projectId',
+                    $data
+                );
+    }  
+
 
 }

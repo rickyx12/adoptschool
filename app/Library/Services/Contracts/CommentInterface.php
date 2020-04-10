@@ -10,4 +10,6 @@ Interface CommentInterface
 	public function add(Request $req);
 
 	public function getComments($projectId);
+
+	public function getAllComments($projectId);
 }

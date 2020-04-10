@@ -26,7 +26,8 @@ class Home extends Controller
 		$this->schoolYear = $schoolYear;
 	}
 
-	public function index() {
+	public function index() 
+	{
 
 		$data = array(
 			'categories' => $this->category->getCategory()
@@ -35,7 +36,8 @@ class Home extends Controller
 		return view('home.index', $data);
 	}
 
-	public function projects(Request $req) {
+	public function projects(Request $req) 
+	{
 
 		$data = array(
 			'categories' => $this->category->getCategory(),
@@ -45,17 +47,19 @@ class Home extends Controller
 		return view('users.projects', $data);
 	}
 
-	public function showFilteredProjects(Request $req) {
+	public function projectsJSON(Request $req) 
+	{
 
-		$data = array(
-			'categories' => $this->category->getCategory(),
-			'projects' => $this->projects->showFilteredProjectsGuest($this->schoolYear->getSchoolYear()[0]->id, $req)
-		);
+		return response()->json($this->projects->showAvailableProjectsGuest($this->schoolYear->getSchoolYear()[0]->id, $req));
+	}
 
-		return view('users.projects', $data);
+	public function showFilteredProjects(Request $req) 
+	{
+		return response()->json($this->projects->showFilteredProjectsGuest($this->schoolYear->getSchoolYear()[0]->id, $req));
 	}		
 
-	public function getProject($projectId) {
+	public function getProject($projectId) 
+	{
 
 		$project = $this->projects->getSingleProject($projectId);
 
@@ -68,6 +72,12 @@ class Home extends Controller
 		}else {
 			abort(404);
 		}
+	}
+
+	public function getTotalApprovedQty($projectId) 
+	{
+		$data = $this->projects->getTotalApprovedQty($projectId);
+		return response()->json($data);
 	}
 
 }

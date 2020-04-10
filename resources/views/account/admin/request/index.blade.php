@@ -124,10 +124,10 @@
 @endsection
 
 @push('admin-request-scripts')
-	<script src="https://unpkg.com/gijgo@1.9.13/js/gijgo.min.js" type="text/javascript"></script>
-	<link href="https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css" rel="stylesheet" type="text/css" />
-	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
-	<script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.6/dist/loadingoverlay.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/cleave.js/1.5.4/cleave.min.js"></script>
+	<script src="{{ url('../resources/library/gijgo/dist/combined/js/gijgo.min.js') }}" type="text/javascript"></script>
+	<link href="{{ url('../resources/library/gijgo/dist/combined/css/gijgo.min.css') }}" rel="stylesheet" type="text/css" />
+	<script src="{{ url('../resources/library/sweetalert2/sweetalert2.js') }}"></script>
+	<script src="{{ url('../resources/library/loadingoverlay2.1.6/loadingoverlay.min.js') }}"></script>
+	<script src="{{ url('../resources/library/cleavejs1.5.4/cleave.min.js') }}"></script>
 	<script src="{{ url('../resources/js/admin/request.js') }}"></script>
 @endpush

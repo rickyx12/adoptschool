@@ -58,20 +58,24 @@ class Schools extends Controller
 		return view('account.schools.projects.index', $data);
 	}
 
-	public function filteredProjects(Request $req) 
+	public function projectsJSON(Request $req) 
+	{
+		
+		return response()->json($this->projects->getProjects(Auth::user()->id, $req));
+	}
+
+	public function projectsByImplementationDate(Request $req) 
 	{
 
-		$data = array(
-			'categories' => $this->category->getCategory(),
-			'schoolYear' => $this->schoolYear->getSchoolYear(),
-			'projects' => $this->projects->showFilteredSchoolProjects(Auth::user()->id, $req)
-		);
-
-		return view('account.schools.projects.index', $data);
+		return response()->json($this->projects->getProjectsByImplementationDate(Auth::user()->id, $req));
 	}
 
 	public function newProject(Request $req) 
 	{
+
+		$req->validate([
+			'needs' => 'required|numeric'
+		]);
 
 		$schoolId = Auth::user()->id;
 		$categoryNeeds = $this->category->getSubCategoryById($req->input('needs'))[0]->category;
@@ -107,6 +111,11 @@ class Schools extends Controller
 
 	public function publishControl(Request $req) {
 		return $this->schools->publishControl($req);
+	}
+
+	public function delete(Request $req) 
+	{
+		$this->projects->delete($req);
 	}
 
 	public function logout() 

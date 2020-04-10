@@ -26,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
     {
 
         Blade::directive('money', function ($amount) {
-            return "<?php echo '₱' . number_format($amount, 2); ?>";
+            return "<?php echo '₱' .str_replace('.00','',number_format($amount,2)); ?>";
         });
 
         Blade::directive("formatDate", function ($date) {
