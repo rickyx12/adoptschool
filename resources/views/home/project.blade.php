@@ -107,7 +107,11 @@
 
 	      				<div class="row">
 	      					<div class="col-md">
-	      						<a href="#" v-if="latestComments" @click.prevent="getAllComments({{ $project[0]->id }})" class="text-decoration-none" style="font-size: 13px;">View more comments</a>
+
+	      						@if(count($comments->getAllComments($project[0]->id)) > 5)
+	      							<a href="#" v-if="latestComments" @click.prevent="getAllComments({{ $project[0]->id }})" class="text-decoration-none" style="font-size: 13px;">View more comments</a>
+	      						@endif
+
 	      						@if(Auth::guard('schools')->check() || Auth::guard('stakeholders')->check() || Auth::guard('admin')->check())
 		      						<textarea @keyup.13="addComment({{ $project[0]->id }})" v-model="userComment" class="form-control commentField" cols="5" rows="2" placeholder="Write comment here then Press Enter."></textarea>
 							        <div id="errorComment{{ $project[0]->id }}"></div>
