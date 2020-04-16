@@ -42,8 +42,50 @@ Vue.component('projects',{
 	props: {
 		project: Object
 	},
+	data() {
+		return {
+			approvedQty: 0,
+			percentage: 0			
+		}
+	},
+	created() {
+		this.approvedQTY(this.project.id)
+	},
 	filters:{
 		formatDate
+	},
+	computed:{
+		getPercentage: function() {
+			return Math.round(this.percentage);
+		}
+	},	
+	methods: {
+		approvedQTY: function(projectId) {
+			
+			axios.get(`${BASE_URL}/project/${projectId}/approved-qty`)
+			.then((response) => {
+				if(response.data[0].approvedQTY > 0) {
+
+					let getPercentage = 0;
+
+					this.approvedQty = response.data[0].approvedQTY;
+					getPercentage = response.data[0].approvedQTY / this.project.qty;
+					this.percentage = getPercentage * 100;
+
+				}else {
+					this.approvedQty = 0;
+				}
+			})
+			.catch((error) => {
+				console.log(error);
+			})
+			.finally(() => {
+				$.LoadingOverlay('hide');
+			})
+		},
+		deleteProject() {
+			this.$emit('delete')
+		}				
 	},
 	template:`
 
@@ -114,11 +156,13 @@ Vue.component('projects',{
 						</p>
 
 						<div class="progress mt-auto">
-						  <div class="progress-bar bg-success" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+						  <div class="progress-bar bg-success" role="progressbar" :style="'width:'+getPercentage+'%;'" :aria-valuenow="this.approvedQty" aria-valuemin="0" :aria-valuemax="project.qty">
+						  	{{ this.approvedQty }} / {{ project.qty }}
+						  </div>
 						</div>					
 				
 						<div class="d-flex d-row justify-content-center">
-							<a href="${BASE_URL}/project/'+project.id" target="_blank" class="mt-3 text-decoration-none mb-auto m-1 btn btn-sm btn-primary">
+							<a :href="'${BASE_URL}/project/'+project.id" target="_blank" class="mt-3 text-decoration-none mb-auto m-1 btn btn-sm btn-primary">
 								View
 							</a>
 							<a href="#" data-toggle="modal" :data-target="'#deleteModal'+project.id" class="mt-3 text-decoration-none mb-auto m-1 btn btn-sm btn-danger">
@@ -150,12 +194,7 @@ Vue.component('projects',{
 				</div>
 			</div>		
 
-	`,
-	methods: {
-		deleteProject() {
-			this.$emit('delete')
-		}
-	},	
+	`
 });
 
 new Vue({ 

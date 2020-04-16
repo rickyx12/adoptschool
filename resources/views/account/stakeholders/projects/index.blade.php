@@ -6,6 +6,9 @@
   			<projects 
 	  			v-for="project in projects" 
 	  			:project="project"
+	  			:request-error-contact-no="requestErrorContactNo"
+	  			:request-error-contact-no-message="requestErrorContactNoMessage"
+	  			:request-error-contact-no-show="requestErrorContactNoMessageShow"
 	  			@contactno="requestContactNo = $event"
 	  			@message="requestStakeholdersMessage = $event"
 	  			@request="sendRequest(project.id)"

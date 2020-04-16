@@ -71,6 +71,11 @@ Route::prefix('/account')->group(function() {
 
 	Route::get('/stakeholders', 'Stakeholders@index');
 	Route::prefix('/stakeholders')->group(function() {
+
+		Route::prefix('/profile')->group(function() {
+			Route::get('/', 'Stakeholders@profile');
+			Route::post('/update', 'Stakeholders@update');
+		});
 		
 		Route::get('/projects', 'Stakeholders@projects');
 		Route::prefix('/projects')->group(function() {
@@ -84,7 +89,8 @@ Route::prefix('/account')->group(function() {
 
 		Route::get('/contributions', 'Stakeholders@getProjectContributions');
 		Route::prefix('/contributions')->group(function() {
-			Route::post('/filtered', 'Stakeholders@getFilteredProjectContributions');
+			Route::post('/json', 'Stakeholders@getProjectContributionsJSON');
+			Route::post('/cancel', 'Stakeholders@cancelContribution');
 		});
 
 		Route::get('/logout', 'Stakeholders@logout');
@@ -93,9 +99,12 @@ Route::prefix('/account')->group(function() {
 
 	Route::get('/schools', 'Schools@index');
 	Route::prefix('/schools')->group(function() {
+		Route::get('/profile', 'Schools@profile');
+		Route::post('profile/update', 'Schools@update');
 		Route::get('/logout', 'Schools@logout');
 		Route::get('/projects', 'Schools@projects');
 		Route::post('/projects/add', 'Schools@newProject');
+		Route::post('/stakeholders/json', 'Schools@stakeholdersJSON');
 
 		Route::prefix('/projects')->group(function() {
 			Route::post('/json', 'Schools@projectsJSON');

@@ -1,5 +1,6 @@
-import { BASE_URL } from './baseUrl.js';
+import { BASE_URL } from './baseUrl.js'
 import formatDate from './formatDate.js'
+import formatWord from './formatWord.js'
 
 Vue.component('all-comments',{
 	props:{
@@ -8,14 +9,7 @@ Vue.component('all-comments',{
 		date: String
 	},
 	filters:{
-		formatName: function(value) {
-			
-			let str = value.toLowerCase();
-	    	return str.replace(/(^([a-zA-Z\p{M}]))|([ -][a-zA-Z\p{M}])/g,
-	        function($1){
-	            return $1.toUpperCase();
-	        });
-		},
+		formatWord,
 		getDate: function(value) {
 
 			let date = value.split(" ");

@@ -9,6 +9,7 @@ use App\Library\Services\Contracts\ProjectsInterface;
 use App\Library\Services\Contracts\SchoolYearInterface;
 use App\Library\Services\Contracts\CategoryInterface;
 use App\Library\Services\Contracts\CommentInterface;
+use App\Library\Services\Contracts\SectorInterface;
 
 class Stakeholders extends Controller
 {
@@ -18,13 +19,15 @@ class Stakeholders extends Controller
 	private $schoolYear;
 	private $category;
 	private $comment;
+	private $sector;
 
 	public function __construct(
 		StakeholdersInterface $stakeholders,
 		ProjectsInterface $projects, 
 		SchoolYearInterface $schoolYear,
 		CategoryInterface $category,
-		CommentInterface $comment
+		CommentInterface $comment,
+		SectorInterface $sector
 	) {
 
 		$this->stakeholders = $stakeholders;
@@ -32,6 +35,7 @@ class Stakeholders extends Controller
 		$this->schoolYear = $schoolYear;
 		$this->category = $category;
 		$this->comment = $comment;
+		$this->sector = $sector;
 
 		$this->middleware('auth:stakeholders');
 	}
@@ -39,6 +43,22 @@ class Stakeholders extends Controller
 	public function index() 
 	{
 		return view('account.stakeholders.dashboard.index');
+	}
+
+	public function profile() 
+	{	
+
+		$data = array(
+			'stakeholder' => $this->stakeholders->getInformation(Auth::user()->id)[0],
+			'sectors' => $this->sector->getSector()
+		);
+
+		return view('account.stakeholders.profile.index', $data);
+	}
+
+	public function update(Request $req) {
+
+		$this->stakeholders->update($req);
 	}
 
 	public function projects(Request $req) 
@@ -84,21 +104,19 @@ class Stakeholders extends Controller
 
 		$data = array(
 			'categories' => $this->category->getCategory(),
-			'projects' => $this->stakeholders->getProjectContributions(Auth::user()->id)
 		);
 
 		return view('account.stakeholders.contributions.index', $data);
 	}
 
-	public function getFilteredProjectContributions(Request $req) 
+	public function getProjectContributionsJSON(Request $req) 
 	{
+		return response()->json($this->stakeholders->getProjectContributions(Auth::user()->id, $req));
+	}
 
-		$data = array(
-			'categories' => $this->category->getCategory(),
-			'projects' => $this->stakeholders->getFilteredProjectContributions(Auth::user()->id, $req)
-		);
-
-		return view('account.stakeholders.contributions.index', $data);
+	public function cancelContribution(Request $req)
+	{
+		return response()->json($this->stakeholders->cancelContribution($req));
 	}
 
 	public function logout() {

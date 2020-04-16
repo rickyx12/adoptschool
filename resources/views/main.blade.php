@@ -140,7 +140,7 @@
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">Stakeholders</a>
               <div class="dropdown-menu">
-                <a href="#" class="dropdown-item">Profile</a>
+                <a href="{{ url('account/stakeholders/profile') }}" class="dropdown-item">Profile</a>
                 <a href="{{ url('account/stakeholders/logout') }}" class="dropdown-item">Logout</a>
               </div>
             </li>
@@ -150,7 +150,7 @@
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#">School</a>
               <div class="dropdown-menu">
-                <a href="#" class="dropdown-item">Profile</a>
+                <a href="{{ url('account/schools/profile') }}" class="dropdown-item">Profile</a>
                 <a href="{{ url('account/schools/logout') }}" class="dropdown-item">Logout</a>
               </div>
             </li>
@@ -177,14 +177,18 @@
     @yield('stakeholders-dashboard')
     @yield('stakeholders-projects')
     @yield('stakeholders-contributions')
+    @yield('stakeholders-profile')
 
     @yield('schools-dashboard')
     @yield('schools-projects')
+    @yield('schools-stakeholders')
+    @yield('schools-profile')
 
     <script src="{{ url('../resources/js/jquery1.12.4/jquery.js') }}"></script>
     <script src="{{ url('../resources/js/popper.min.js') }}"></script>
     <script src="{{ url('../resources/library/bootstrap4.4.1/bootstrap.min.js') }}"></script>
     <script src="{{ url('../resources/library/jquery-ui1.12.1/jquery-ui.js') }}"></script>
+    
     @stack('home-scripts')
     @stack('single-project-scripts')
     @stack('admin-registration-scripts')
@@ -196,7 +200,11 @@
     @stack('admin-request-scripts')
     @stack('stakeholders-projects-scripts')
     @stack('stakeholders-contributions-scripts')
+    @stack('stakeholders-profile-scripts')
 
+    @stack('schools-dashboard-scripts')
     @stack('schools-projects-scripts')
+    @stack('schools-stakeholders-scripts')
+    @stack('schools-profile-scripts')
   </body>
 </html>    

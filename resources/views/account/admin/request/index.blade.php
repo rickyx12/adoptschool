@@ -4,7 +4,7 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-md mt-3">
-      	<h5>Stakeholder Requeest</h5>
+      	<h5>Stakeholders Requeest</h5>
       </div>
     </div>
     <div class="row">
@@ -14,34 +14,28 @@
 
 	      <div id="requestContainer{{ $project->requestId }}" class="col-md-4 mt-3">
 			<div class="card">
-			  <div class="card-body">
+			  <div class="card-body d-flex flex-column">
 			    <h5 class="card-title">
 			    	{{ ucwords($stakeholder->getInformation($project->stakeholder)[0]->name) }}  
 			    </h5>
 			    <h6 class="card-subtitle mb-2 text-muted">{{ $project->stakeholder_contact }}</h6>
-			    <ul>
-			    	<li><h5>{{ $project->sub_category }}</h5></li>
-			    	<li>Estimated Amount: @money($project->amount)</li>
-			    	<li>Quantity: {{ $project->qty }}</li>
-			    	<li>Implementation Date: @formatDate($project->implementation_date)</li>
-			    	<li>No. of Beneficiary Students: {{ $project->students_beneficiary }}</li>
-			    	<li>No. of Beneficiary Personnel: {{ $project->personnels_beneficiary }}</li>
-			    	<li>S.Y {{ $project->school_year }}</li>
-			    	<li>School {{ $project->school }}</li>
-			    	<li>Contact Person: {{ $project->accountable_person }}</li>
-			    	<li>Contact No#: {{ $project->contact_no }}</li>
-			    </ul>
+				<h6 class="lead mt-1" style="font-size: 15px;">@formatDate($project->date_application)</h6>	
+			
+				<ul>
+					<li>{{ ucwords($project->sub_category) }}</li>
+					<li>Est. Amount: @money($project->amount)</li>
+					<li>{{ ucwords($project->school) }}</li>
+				</ul>
 
-			 	<div class="jumbotron">
-			 		{{ $project->description }}
-			 	</div>
-			 	<hr>
-			 	<h5 class="lead mt-1">{{ ucwords($stakeholder->getInformation($project->stakeholder)[0]->name) }} Message</h5>
 			 	<div class="jumbotron mb-0">
 			 		{{ $project->message }}
 			 	</div>
-			 	<h6 class="lead mt-1" style="font-size: 15px;">Date Request: @formatDate($project->date_application)</h6>
-			 	<button class="btn btn-sm btn-success mt-2 approveBtn" data-id="{{ $project->requestId }}" data-toggle="modal" data-target="#approvedModal{{ $project->requestId }}">Approve</button>
+		
+			 	<button class="btn btn-sm btn-success mt-2 approveBtn mx-auto" data-id="{{ $project->requestId }}" data-toggle="modal" data-target="#approvedModal{{ $project->requestId }}">
+			 		View
+			 	</button>
+			  	
+
 			  </div>
 			</div>
 

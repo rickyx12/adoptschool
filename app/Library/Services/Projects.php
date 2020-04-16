@@ -62,46 +62,74 @@ class Projects implements ProjectsInterface
         {
             $offset = $req->input('offset');
             $rowCount = $req->input('rowCount');
+
+            $projects = DB::select('
+                                SELECT  p.id,
+                                        su.name as school,
+                                        c.name as category, 
+                                        sc.name as sub_category, 
+                                        p.qty, 
+                                        p.amount, 
+                                        p.students_beneficiary, 
+                                        p.personnels_beneficiary, 
+                                        p.implementation_date,
+                                        p.accountable_person,
+                                        p.contact_no, 
+                                        p.description,
+                                        p.status,
+                                        p.date_added, 
+                                        sy.school_year as school_year
+                                FROM projects p
+                                JOIN school_users su 
+                                ON p.school = su.id
+                                JOIN category c
+                                ON p.category = c.id
+                                JOIN sub_category sc
+                                ON p.sub_category = sc.id
+                                JOIN school_year sy
+                                ON p.school_year = sy.id
+                                WHERE p.school = :schoolId
+                                ORDER BY p.id DESC
+                                LIMIT :offset, :rowCount', 
+                                [
+                                    'schoolId' => $schoolId,
+                                    'offset' => $offset,
+                                    'rowCount' => $rowCount
+                                ]
+                            );
+
         }else 
         {
-            $offset = 0;
-            $rowCount = 3;
+            $projects = DB::select('
+                                SELECT  p.id,
+                                        su.name as school,
+                                        c.name as category, 
+                                        sc.name as sub_category, 
+                                        p.qty, 
+                                        p.amount, 
+                                        p.students_beneficiary, 
+                                        p.personnels_beneficiary, 
+                                        p.implementation_date,
+                                        p.accountable_person,
+                                        p.contact_no, 
+                                        p.description,
+                                        p.status,
+                                        p.date_added, 
+                                        sy.school_year as school_year
+                                FROM projects p
+                                JOIN school_users su 
+                                ON p.school = su.id
+                                JOIN category c
+                                ON p.category = c.id
+                                JOIN sub_category sc
+                                ON p.sub_category = sc.id
+                                JOIN school_year sy
+                                ON p.school_year = sy.id
+                                WHERE p.school = :schoolId
+                                ORDER BY p.id DESC', 
+                                ['schoolId' => $schoolId]
+                            );
         }
-
-    	$projects = DB::select('
-        		    		SELECT  p.id,
-                                    su.name as school,
-                                    c.name as category, 
-                                    sc.name as sub_category, 
-                                    p.qty, 
-                                    p.amount, 
-                                    p.students_beneficiary, 
-                                    p.personnels_beneficiary, 
-                                    p.implementation_date,
-                                    p.accountable_person,
-                                    p.contact_no, 
-                                    p.description,
-                                    p.status,
-                                    p.date_added, 
-                                    sy.school_year as school_year
-        		    		FROM projects p
-                            JOIN school_users su 
-                            ON p.school = su.id
-        		    		JOIN category c
-        		    		ON p.category = c.id
-        		    		JOIN sub_category sc
-        		    		ON p.sub_category = sc.id
-        		    		JOIN school_year sy
-        		    		ON p.school_year = sy.id
-        		    		WHERE p.school = :schoolId
-        		    		ORDER BY p.id DESC
-                            LIMIT :offset, :rowCount', 
-        		    		[
-                                'schoolId' => $schoolId,
-                                'offset' => $offset,
-                                'rowCount' => $rowCount
-                            ]
-        		    	);
 
         return $projects;
     }
@@ -177,15 +205,14 @@ class Projects implements ProjectsInterface
 	                            su.name as school, 
 	                            c.name as category, 
 	                            sc.name as sub_category,
-                                ps.id as fundedProject,
-                                ps.approved as fundedProjectStatus, 
 	                            p.qty, p.amount, 
 	                            p.students_beneficiary, 
 	                            p.personnels_beneficiary, 
 	                            p.implementation_date,
 	                            p.accountable_person,
 	                            p.contact_no, 
-	                            p.description, 
+	                            p.description,
+                                ps.id as fundedProject, 
 	                            sy.school_year as school_year
 	                    FROM projects p
 	                    JOIN school_users su

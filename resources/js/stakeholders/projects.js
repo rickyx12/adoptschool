@@ -5,24 +5,36 @@ var projectMixins = {
 	data() {
 		return {
 			requestContactNo: '',
-			requestStakeholdersMessage: '',
-			requestErrorContactNo: '',
-			requestErrorContactNoMessage: '',
-			requestErrorContactNoMessageClass: '',
-			requestErrorContactNoMessageShow: false
+			requestStakeholdersMessage: ''
 		}
 	}
 }
 
 Vue.component('projects', {
 	mixins:[projectMixins],
+	data() {
+		return {
+			approvedQty: 0,
+			percentage: 0			
+		}
+	},
 	props:{
 		project: Object,
-		projectLink: String
+		requestErrorContactNo: String,
+		requestErrorContactNoMessage: String,
+		requestErrorContactNoMessageShow: Boolean
 	},
 	filters: {
 		formatDate
 	},
+	created() {
+		this.approvedQTY(this.project.id)
+	},
+	computed:{
+		getPercentage: function() {
+			return Math.round(this.percentage);
+		}
+	},	
 	methods: {
 		sendRequest() {
 			this.$emit('request');
@@ -32,7 +44,30 @@ Vue.component('projects', {
 		},
 		getMessage() {
 			this.$emit('message', this.requestStakeholdersMessage);
-		}
+		},
+		approvedQTY: function(projectId) {
+			
+			axios.get(`${BASE_URL}/project/${projectId}/approved-qty`)
+			.then((response) => {
+				if(response.data[0].approvedQTY > 0) {
+
+					let getPercentage = 0;
+
+					this.approvedQty = response.data[0].approvedQTY;
+					getPercentage = response.data[0].approvedQTY / this.project.qty;
+					this.percentage = getPercentage * 100;
+
+				}else {
+					this.approvedQty = 0;
+				}
+			})
+			.catch((error) => {
+				console.log(error);
+			})
+			.finally(() => {
+				$.LoadingOverlay('hide');
+			})
+		}		
 	},		
   	template: `
   		
@@ -109,7 +144,9 @@ Vue.component('projects', {
 					</p>
 
 					<div class="progress mt-auto">
-					  <div class="progress-bar bg-success" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+					  <div class="progress-bar bg-success" role="progressbar" :style="'width:'+getPercentage+'%;'" :aria-valuenow="this.approvedQty" aria-valuemin="0" :aria-valuemax="project.qty">
+					  	{{ this.approvedQty }} / {{ project.qty }}
+					  </div>
 					</div>
 
 					<div class="d-flex d-row justify-content-center">
@@ -128,7 +165,7 @@ Vue.component('projects', {
 		  		</div>
 			</div>
 
-			<div class="modal fade" :id="'applyStakeholderModal'+project.id" tabindex="-1" role="dialog" aria-hidden="true">
+			<div class="modal fade" v-if="project.fundedProject === null" :id="'applyStakeholderModal'+project.id" tabindex="-1" role="dialog" aria-hidden="true">
 			  <div class="modal-dialog" role="document">
 			    <div class="modal-content">
 			      <div class="modal-header">
@@ -152,7 +189,7 @@ Vue.component('projects', {
 			        					<span style="font-size: 17px;">Quantity: {{ project.qty }}</span>
 			        				</li>
 			        				<li>
-			        					<span style="font-size: 17px;">Implementation Date: {{ project.implementation_date }}</span>
+			        					<span style="font-size: 17px;">Implementation Date: {{ project.implementation_date | formatDate }}</span>
 			        				</li>			        							        				
 			        			</ul>
 			        		</div>
@@ -162,11 +199,11 @@ Vue.component('projects', {
 							<div class="col-md-7">
 								<div class="form-group">
 									<h6>Contact No#:</h6>
-									<input v-model="requestContactNo" @keyup="getContactNo" type="text" class="form-control" :class="requestErrorContactNo" />
+									<input v-model="requestContactNo" @keyup="getContactNo" type="text" class="form-control" :class="requestErrorContactNo" >
 									<small class="form-text text-muted">
 									 	Our staff will be contacting you.
 									</small>
-									<div v-if="requestErrorContactNoMessageShow" :class="requestErrorContactNoMessageClass">{{ requestErrorContactNoMessage }}</div>								
+									<div class="invalid-feedback">{{ requestErrorContactNoMessage }}</div>								
 								</div>
 							</div>			        		
 			        	</div>
@@ -200,10 +237,15 @@ new Vue({
 		return {
 			offset: 0,
 			rowCount: 3,
-			projects:[]
+			projects:[],
+			requestErrorContactNo: '',
+			requestErrorContactNoMessage: '',
+			requestErrorContactNoMessageShow: false
 		}
 	},
 	created() {
+
+		$.LoadingOverlay('show');
 
 		this.getProjects({offset: this.offset, rowCount: this.rowCount})
 		.then((response) => {
@@ -222,10 +264,11 @@ new Vue({
 	methods: {
 		getProjects: function(data) {
 
-			$.LoadingOverlay('show');
 			return axios.post(`${BASE_URL}/account/stakeholders/projects/json`,data)
 		},
 		viewMoreProjects: function() {
+
+			$.LoadingOverlay('show');
 
 			this.getProjects({offset: this.offset, rowCount: this.rowCount})
 			.then((response) => {
@@ -249,7 +292,7 @@ new Vue({
 				message: this.requestStakeholdersMessage
 			}
 			
-			$('#applyStakeholderModal'+projectId).LoadingOverlay('show');
+			$.LoadingOverlay('show');
 
 			axios.post(`${BASE_URL}/account/stakeholders/projects/stakeholders/add`, data)
 			.then(() => {
@@ -278,110 +321,20 @@ new Vue({
 				})
 				.finally(() => {
 
-					$('#applyStakeholderModal'+projectId).LoadingOverlay('hide');
+					$.LoadingOverlay('hide');
 				})
 			
 			})
 			.catch((error) => {
 
-				console.log(error.response);
+				$.LoadingOverlay('hide');
 
 				this.requestErrorContactNo = 'is-invalid';
 				this.requestErrorContactNoMessageShow = true;
-				this.requestErrorContactNoMessageClass = 'invalid-feedback';
 				this.requestErrorContactNoMessage = error.response.data.errors.contactNo[0];
+
+				console.log(this.requestErrorContactNoMessage+"\n"+this.requestErrorContactNo);
 			})
 		}		
 	}		
 })
-
-
-function getComments(url, projectId) {
-
-	$.ajax({
-		url: url+'/account/stakeholders/projects/'+projectId+'/comments',
-		type:'GET',
-		beforeSend: function() {
-			$('#stakeholdersComments').LoadingOverlay('show');
-		},
-		success: function(result) {
-			
-			let html = '';
-
-			$.each(result, function(index, value) 
-			{
-				html += '<div class="row mb-n4">';
-					html += '<div class="col-md">';
-						html += '<div class="jumbotron jumbotron-fluid pt-1 pb-1">';
-							html += '<div class="container">';
-								html += '<h6 class="mb-0" style="font-size: 14px;">'+value.name+'</h6>';
-								html += '<div class="mt-0" style="font-size: 14px;">'+value.comment+'</div>';
-							html += '</div>';
-						html += '</div>';
-					html += '</div>';
-				html += '</div>';
-			});
-
-			$('#stakeholdersComments').html(html);
-			$('#stakeholdersComments').LoadingOverlay('hide');
-		}
-	});
-}
-
-$(function() {
-
-	$('#filterBtn').click(function() {
-		$('#filterForm').submit();
-	});
-
-	$('.commentField').keypress(function(event) {
-	    var keycode = (event.keyCode ? event.keyCode : event.which);
-	    if(keycode == '13') {
-	        
-	        let projectId = $(this).data('id');
-	    	let comment = $(this).val();
-
-	    	let data = {
-	    		projectId: projectId,
-	    		comment: comment
-	    	}
-
-	    	$.ajax({
-			    headers: {
-			        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-			    }, 	    		
-	    		url: baseUrl+'/account/stakeholders/projects/comments/add',
-	    		type: 'POST',
-	    		data: data,
-	    		beforeSend: function() {
-			    	$('#commentField'+projectId).prop('disabled', true);
-			    	$('#commentField'+projectId).LoadingOverlay('show');
-	    		},
-	    		success: function(result) {
-
-	    			$("#commentField"+projectId).val('');
-	    			$('#commentField'+projectId).prop('disabled', false);
-	    			$('#commentField'+projectId).LoadingOverlay('hide');
-
-	    			getComments(baseUrl, projectId);
-
-	    		},
-	    		error: function(request, status, error) {
-
-	    			let res = JSON.parse(request.responseText);
-
-			        if(res.errors.comment) {
-
-				    	$('#commentField'+projectId).prop('disabled', false);
-				    	$('#commentField'+projectId).LoadingOverlay('hide');
-
-			        	$('#commentField'+projectId).addClass('is-invalid');
-			        	$('#errorComment'+projectId).addClass('invalid-feedback');
-			        	$('#errorComment'+projectId).html(res.errors.comment);
-			        }	    			
-	    		}
-	    	});
-	    }
-	});
-
-});

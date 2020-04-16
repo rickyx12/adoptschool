@@ -178,6 +178,7 @@ return [
         App\Providers\AdminProvider::class,
         App\Providers\StakeholdersProvider::class,
         App\Providers\SchoolProvider::class,
+        App\Providers\SchoolTypeProvider::class,
         App\Providers\SchoolYearProvider::class,
         App\Providers\CategoryProvider::class,
         App\Providers\RegionsProvider::class,

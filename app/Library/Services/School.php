@@ -54,69 +54,184 @@ class School implements SchoolInterface {
     	DB::insert('INSERT INTO school_users(email, password, name, region, division, school_type, accountable_person, position, contact_no, address, date_register) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', $data);  	
     }
 
+    public function update(Request $req) {
+
+        $req->validate([
+            'schoolId' => 'required',
+            'name' => 'required',
+            'region' => 'required',
+            'division' => 'required',
+            'schoolType' => 'required',
+            'accountablePerson' => 'required',
+            'position' => 'required',
+            'contactNo' => 'required'
+        ]);
+
+        $schoolId = $req->input('schoolId');
+        $name = $req->input('name');
+        $region = $req->input('region');
+        $division = $req->input('division');
+        $schoolType = $req->input('schoolType');
+        $accountablePerson = $req->input('accountablePerson');
+        $position = $req->input('position');
+        $contactNo = $req->input('contactNo');
+
+        $data = [
+            'schoolId' => $schoolId,
+            'name' => $name,
+            'region' => $region,
+            'division' => $division,
+            'schoolType' => $schoolType,
+            'accountablePerson' => $accountablePerson,
+            'position' => $position,
+            'contactNo' => $contactNo
+        ];
+
+        return DB::update('UPDATE school_users SET name = :name, region = :region, division = :division, school_type = :schoolType, accountable_person = :accountablePerson, position = :position, contact_no = :contactNo WHERE id = :schoolId', $data);
+    }
+
     public function type() {
 
         return DB::select('SELECT * FROM school_type WHERE is_deleted = ?',[0]);
     }
 
 
-    public function getStakeholdersProject($schoolId) 
+    public function getStakeholdersProject($schoolId, Request $req) 
     {
 
-        return DB::select('
-                    SELECT p.id, 
-                            su.name as school, 
-                            c.name as category, 
-                            sc.name as sub_category,
-                            ps.stakeholder,
-                            ps.contact_no as stakeholder_contact,
-                            ps.approved,
-                            ps.message,
-                            ps.date_application, 
-                            p.qty, p.amount, 
-                            p.students_beneficiary, 
-                            p.personnels_beneficiary, 
-                            p.implementation_date,
-                            p.accountable_person,
-                            p.contact_no, 
-                            p.description, 
-                            sy.school_year as school_year
-                    FROM projects p
-                    JOIN school_users su
-                    ON p.school = su.id
-                    JOIN category c
-                    ON p.category = c.id
-                    JOIN sub_category sc
-                    ON p.sub_category = sc.id
-                    JOIN school_year sy
-                    ON p.school_year = sy.id
-                    JOIN project_stakeholders ps
-                    ON p.id = ps.project
-                    WHERE p.school = :schoolId
-                    ORDER BY p.implementation_date ASC',
-                    ['schoolId' => $schoolId]
-                );
+        if($req->has('offset') && $req->has('rowCount')) 
+        {
+            $offset = $req->input('offset');
+            $rowCount = $req->input('rowCount');
+
+            $stakeholder = DB::select('
+                                SELECT p.id as projectId, 
+                                        su.name as school, 
+                                        c.name as category, 
+                                        sc.name as sub_category,
+                                        ps.stakeholder,
+                                        ps.monetary_value_donation as contributedAmount,
+                                        ps.quantity_donation as contributedQTY,
+                                        ps.contact_no as stakeholder_contact,
+                                        ps.approved,
+                                        ps.message,
+                                        ps.date_application,
+                                        ps.transaction_date,
+                                        stakeholder_users.name as stakeholderName,
+                                        au.complete_name as staff,
+                                        p.qty as neededQTY, 
+                                        p.amount, 
+                                        p.students_beneficiary, 
+                                        p.personnels_beneficiary, 
+                                        p.implementation_date,
+                                        p.accountable_person,
+                                        p.contact_no, 
+                                        p.description, 
+                                        sy.school_year as school_year
+                                FROM projects p
+                                JOIN school_users su
+                                ON p.school = su.id
+                                JOIN category c
+                                ON p.category = c.id
+                                JOIN sub_category sc
+                                ON p.sub_category = sc.id
+                                JOIN school_year sy
+                                ON p.school_year = sy.id
+                                JOIN project_stakeholders ps
+                                ON p.id = ps.project
+                                JOIN stakeholder_users
+                                ON ps.stakeholder = stakeholder_users.id
+                                LEFT JOIN admin_users au
+                                ON ps.assisting_admin = au.id
+                                WHERE p.school = :schoolId
+                                ORDER BY ps.date_application DESC
+                                LIMIT :offset, :rowCount
+                                ',
+                                [
+                                    'schoolId' => $schoolId,
+                                    'offset' => $offset,
+                                    'rowCount' => $rowCount
+                                ]
+                            );
+
+        }else 
+        {
+            $stakeholder = DB::select('
+                                SELECT p.id as projectId, 
+                                        su.name as school, 
+                                        c.name as category, 
+                                        sc.name as sub_category,
+                                        ps.stakeholder,
+                                        ps.monetary_value_donation as contributedAmount,
+                                        ps.quantity_donation as contributedQTY,
+                                        ps.contact_no as stakeholder_contact,
+                                        ps.approved,
+                                        ps.message,
+                                        ps.date_application,
+                                        ps.transaction_date,
+                                        stakeholder_users.name as stakeholderName,
+                                        au.complete_name as staff,
+                                        p.qty as neededQTY, 
+                                        p.amount, 
+                                        p.students_beneficiary, 
+                                        p.personnels_beneficiary, 
+                                        p.implementation_date,
+                                        p.accountable_person,
+                                        p.contact_no, 
+                                        p.description, 
+                                        sy.school_year as school_year
+                                FROM projects p
+                                JOIN school_users su
+                                ON p.school = su.id
+                                JOIN category c
+                                ON p.category = c.id
+                                JOIN sub_category sc
+                                ON p.sub_category = sc.id
+                                JOIN school_year sy
+                                ON p.school_year = sy.id
+                                JOIN project_stakeholders ps
+                                ON p.id = ps.project
+                                JOIN stakeholder_users
+                                ON ps.stakeholder = stakeholder_users.id
+                                LEFT JOIN admin_users au
+                                ON ps.assisting_admin = au.id
+                                WHERE p.school = :schoolId
+                                ORDER BY ps.date_application DESC',
+                                ['schoolId' => $schoolId]
+                            );
+        }
+
+        return $stakeholder;
     }
 
 
-    public function publishControl(Request $req) 
+    public function getProfile($schoolId) 
     {
 
-        $projectId = $req->input('projectId');
-        $action = $req->input('action');
-
-        $data = array(
-            'projectId' => $projectId
-        );
-
-        if($action == "unpublish") 
-        {
-            return DB::update('UPDATE projects SET publish = 0 WHERE id = :projectId', $data);
-        }else 
-        {
-            return DB::update('UPDATE projects SET publish = 1 WHERE id = :projectId', $data);
-        }
-
+        return DB::select('SELECT
+                            su.id as schoolId, 
+                            su.name, 
+                            su.region as regionId, 
+                            su.division as divisionId, 
+                            su.school_type as schoolTypeId, 
+                            su.address, 
+                            su.accountable_person,
+                            su.position,
+                            su.contact_no,
+                            su.date_register,
+                            r.name as region,
+                            sd.name as division,
+                            st.type as schoolType 
+                        FROM school_users su
+                        JOIN region r 
+                        ON su.region = r.id
+                        JOIN school_division sd
+                        ON su.division = sd.id
+                        JOIN school_type st
+                        ON su.school_type = st.id
+                        WHERE su.id = :schoolId',
+                        ['schoolId' => $schoolId]
+                );        
     }
 
 }
